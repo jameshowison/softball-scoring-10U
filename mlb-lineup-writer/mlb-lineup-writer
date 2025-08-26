@@ -1,0 +1,854 @@
+#----------------------------------------------------------s
+# start editing here
+#-----------------------------------------------------------
+
+myteam = "Philadelphia Phillies"    # over 11,000 losses.  Feel the angst.
+# myteam = "Arizona Diamondbacks"
+# myteam = "Athletics"
+# myteam = "Atlanta Braves"
+# myteam = "Baltimore Orioles"
+# myteam = "Boston Red Sox"
+# myteam = "Chicago Cubs"
+# myteam = "Chicago White Sox"
+# myteam = "Cincinnati Reds"
+# myteam = "Cleveland Guardians"
+# myteam = "Colorado Rockies"
+# myteam = "Detroit Tigers"
+# myteam = "Houston Astros"
+# myteam = "Kansas City Royals"
+# myteam = "Los Angeles Angels"
+# myteam = "Los Angeles Dodgers"
+# myteam = "Miami Marlins"
+# myteam = "Milwaukee Brewers"
+# myteam = "Minnesota Twins"
+# myteam = "New York Mets"
+# myteam = "New York Yankees"
+# myteam = "Pittsburgh Pirates"
+# myteam = "San Diego Padres"
+# myteam = "San Francisco Giants"
+# myteam = "Seattle Mariners"
+# myteam = "St. Louis Cardinals"
+# myteam = "Tampa Bay Rays"
+# myteam = "Texas Rangers"
+# myteam = "Toronto Blue Jays"
+# myteam = "Washington Nationals"
+
+# this is hard-coded for now.....
+#template = "Reisner"               # my custom Reisner scorekeeping derivative template
+template = "Lou"                   # my custom thirty81project.com generic scorecard derivative template
+
+input_filename  = "input.pdf"
+output_filename = "output.pdf"
+
+#-----------------------------------------------------------
+# stop editing here
+#-----------------------------------------------------------
+
+import sys
+import statsapi
+schedule = statsapi.get( "schedule", {"sportId":1} )
+
+from pypdf             import PdfReader,PdfWriter
+from pypdf.annotations import FreeText
+reader = PdfReader(input_filename)    # TODO: prompt for input filename
+writer = PdfWriter()                  # TODO: prompt for output filename
+
+# TODO: select a date
+# date = schedule['dates'][0]['date']
+
+# TODO: loop through games to pick the one you want
+# TODO: support second game of doubleheader
+
+# TODO: this can blow up if no games for your team today
+
+#-----------------------------------------------------------
+# find our game and grab the pertinent info from it
+#-----------------------------------------------------------
+
+# today's games
+games = schedule['dates'][0]['games']
+
+for game in games:
+    away_team = game['teams']['away']['team']['name'];
+    home_team = game['teams']['home']['team']['name'];
+
+    if (home_team == myteam) or (away_team == myteam):
+
+        print(away_team + " at " + home_team)
+        away_teamid = game['teams']['away']['team']['id'];
+        home_teamid = game['teams']['home']['team']['id'];
+
+        away_record = str(game['teams']['away']['leagueRecord']['wins']) + "-" +  str(game['teams']['away']['leagueRecord']['losses'])
+        home_record = str(game['teams']['home']['leagueRecord']['wins']) + "-" +  str(game['teams']['home']['leagueRecord']['losses'])
+
+        todays_date = schedule['dates'][0]['date']
+        print("==> today = ", todays_date)
+
+        gameId   = game['gamePk']
+        gamedata = statsapi.boxscore_data(gameId)
+
+        # walk the game playerInfo and build a hash of short id=>name for later reference
+        playerInfo  = { }
+        boxscoreMap = { }
+
+        hitter_stats  = { }  # hitting only
+        pitcher_stats = { }  # pitching only
+        player_stats  = { }  # both hitting and pitching
+        side = { }           # bats or hits
+
+        # grab player stats etc - this takes about 6 seconds for one game or so
+        # we grab both hitting and pitching to handle the case where a player
+        # has both hit and pitched in the current season
+
+        print("... mapping players and getting their stats ...")
+        playerdata  = gamedata['playerInfo']
+
+        #print(gamedata);sys.exit(0) #vds
+        for id in playerdata:
+
+            shortid              = playerdata[id]['id']
+            boxscoreName         = playerdata[id]['boxscoreName']
+            boxscoreMap[shortid] = boxscoreName
+
+            player_stats[shortid]  = statsapi.player_stat_data(shortid, group="[hitting,pitching]",  type="season")
+
+            # stats are in an array with 'group' denoting hitting or pitching
+            # we grab the avg from hitting stats, and era from pitching stats
+
+            for stats in player_stats[shortid]['stats']:
+                if (stats['group'] == "hitting"):
+                    try:
+                        hitter_stats[shortid] = stats['stats']
+                    except:
+                        hitter_stats[shortid] = "n/a"
+                    # convert Right to R and Left to L
+                    try:
+                        side[shortid] = player_stats[shortid]['bat_side'][:1]
+                    except:
+                        side[shortid] = "n/a"
+
+                elif (stats['group'] == "pitching"):
+                    try:
+                        pitcher_stats[shortid] = stats['stats']
+                    except:
+                        pitcher_stats[shortid] = "n/a"
+                    # convert Right to R and Left to L
+                    try:
+                        side[shortid] = player_stats[shortid]['pitch_hand'][:1]
+                    except:
+                        side[shortid] = "-"
+
+        print("... done mapping players and getting their stats ...")
+
+        print("-------- away bullpen --------")
+        away_pen = [ ]
+        away_pen_eras = [ ]
+        for p in gamedata['away']['bullpen']:
+            away_pen.append(boxscoreMap[p])
+            try:
+                away_pen_eras.append(pitcher_stats[p]['era'])
+            except:
+                away_pen_eras.append("n/a")
+        print(away_pen)
+        print(away_pen_eras)
+
+        print("-------- away bench --------")
+        away_bench = [ ]
+        away_bench_stats = [ ]
+        for p in gamedata['away']['bench']:
+            away_bench.append(boxscoreMap[p])
+            try:
+                away_bench_stats.append(hitter_stats[p]['avg'])
+            except:
+                away_bench_stats.append("n/a")
+        print(away_bench)
+        print(away_bench_stats)
+
+        print("-------- away order --------")
+        away_order = [ ]
+        away_batter_avgs = [ ]
+        away_batter_side = [ ]
+        # TODO: this needs work - for a player with no games played yet
+        #       the try/except should be in the finding the player stats
+        #       up top in this program, not in every place the stats
+        #       need to be used below.  For now we'll brute force it.
+        for p in gamedata['away']['battingOrder']:
+            away_order.append(boxscoreMap[p])
+            try:
+                away_batter_avgs.append(hitter_stats[p]['avg'])
+            except:
+                away_batter_avgs.append("---")
+            try:
+                away_batter_side.append(side[p])
+            except:
+                away_batter_side.append("-")
+        print(away_order)
+        print(away_batter_avgs)
+        print(away_batter_side)
+
+        print("-------- away starter ------")
+        away_starter = [ ]
+        away_starter_eras = [ ]
+        away_starter_side = [ ]
+        for p in gamedata['away']['pitchers']:
+            away_starter.append(boxscoreMap[p])
+            try:
+                away_starter_eras.append(pitcher_stats[p]['era'])
+            except:
+                away_starter_eras.append("n/a")
+            try:
+                away_starter_side.append(side[p])
+            except:
+                away_starter_side.append("-")
+            break   # first pitcher is starter
+        print(away_starter)
+        print(away_starter_eras)
+        print(away_starter_side)
+
+  #--- home ----
+
+        print("-------- home bullpen --------")
+        home_pen = [ ]
+        home_pen_eras = [ ]
+        for p in gamedata['home']['bullpen']:
+            home_pen.append(boxscoreMap[p])
+            try:
+                home_pen_eras.append(pitcher_stats[p]['era'])
+            except:
+                home_pen_eras.append("n/a")
+        print(home_pen)
+        print(home_pen_eras)
+
+        print("-------- home bench --------")
+        home_bench = [ ]
+        home_bench_stats = [ ]
+        for p in gamedata['home']['bench']:
+            home_bench.append(boxscoreMap[p])
+            try:
+                home_bench_stats.append(hitter_stats[p]['avg'])
+            except:
+                home_bench_stats.append("n/a")
+        print(home_bench)
+        print(home_bench_stats)
+
+        print("-------- home order --------")
+        home_order = [ ]
+        home_batter_avgs = [ ]
+        home_batter_side = [ ]
+        for p in gamedata['home']['battingOrder']:
+            home_order.append(boxscoreMap[p])
+            try:
+                home_batter_avgs.append(hitter_stats[p]['avg'])
+            except:
+                home_batter_avgs.append("n/a")
+            try:
+                home_batter_side.append(side[p])
+            except:
+                home_batter_side.append("-")
+        print(home_order)
+        print(home_batter_avgs)
+        print(home_batter_side)
+
+        print("-------- home starter ------")
+        home_starter = [ ]
+        home_starter_eras = [ ]
+        home_starter_side = [ ]
+        for p in gamedata['home']['pitchers']:
+            home_starter.append(boxscoreMap[p])
+            try:
+                home_starter_eras.append(pitcher_stats[p]['era'])
+            except:
+                home_starter_eras.append("n/a")
+            try:
+                home_starter_side.append(side[p])
+            except:
+                home_starter_side.append("-")
+            break   # first pitcher is starter
+        print(home_starter)
+        print(home_starter_eras)
+        print(home_starter_side)
+
+  #--- done ----
+
+        # exit looping through games (we found the right one)
+        break
+
+#-----------------------------------------------------------
+# process the data for our game
+#-----------------------------------------------------------
+
+teams = [ away_team, home_team ]
+
+# TODO: clean up terminology so these are not needed
+away_batters  = away_order
+away_starters = away_starter
+home_batters  = home_order
+home_starters = home_starter
+
+#-------- geometry for overlays ---------
+# geom = xLL, yLL, xUR, yUR
+#----------------------------------------
+
+if template == "Reisner":
+
+    # note: anything marked as [ ] does not fit on a portrait card
+
+    # home card geom is offset 1-2 pixels vertically
+
+    date_loc           = [ 40, 760, 95,  770 ]
+
+    # these geom might need tweaking when records get to nn-nnn or nnn-nn
+    awayteamgeom       = [ 15, 746, 64,  756]
+    awayteamrecordgeom = [ 65, 746, 103, 756]
+    hometeamgeom       = [ 15, 733, 64,  743]
+    hometeamrecordgeom = [ 65, 733, 103, 743]
+
+    away_batters0 = [25, 698, 100, 708]
+    away_batters1 = [25, 645, 100, 655]
+    away_batters2 = [25, 590, 100, 600]
+    away_batters3 = [25, 540, 100, 550]
+    away_batters4 = [25, 485, 100, 495]
+    away_batters5 = [25, 432, 100, 442]
+    away_batters6 = [25, 380, 100, 390]
+    away_batters7 = [25, 324, 100, 334]
+    away_batters8 = [25, 270, 100, 280]
+
+    away_batter_avgs0 = [ ]
+    away_batter_avgs1 = [ ]
+    away_batter_avgs2 = [ ]
+    away_batter_avgs3 = [ ]
+    away_batter_avgs4 = [ ]
+    away_batter_avgs5 = [ ]
+    away_batter_avgs6 = [ ]
+    away_batter_avgs7 = [ ]
+    away_batter_avgs8 = [ ]
+
+    away_batter_side0 = [ ]
+    away_batter_side1 = [ ]
+    away_batter_side2 = [ ]
+    away_batter_side3 = [ ]
+    away_batter_side4 = [ ]
+    away_batter_side5 = [ ]
+    away_batter_side6 = [ ]
+    away_batter_side7 = [ ]
+    away_batter_side8 = [ ]
+
+    away_starter0      = [25, 135, 100, 145]
+
+    away_starter_eras0 = [ ]
+    away_starter_side0 = [ ]
+
+    home_bench0 = [235, 128, 308, 137]
+    home_bench1 = [235, 118, 308, 127]
+    home_bench2 = [235, 108, 308, 117]
+    home_bench3 = [235,  98, 308, 107]
+    home_bench4 = [235,  88, 308,  97]
+    home_bench5 = [235,  78, 308,  87]
+    home_bench6 = [235,  68, 308,  77]
+
+    away_pen0  = [345, 130, 401, 138]
+    away_pen1  = [345, 120, 401, 128]
+    away_pen2  = [345, 110, 401, 118]
+    away_pen3  = [345, 100, 401, 108]
+    away_pen4  = [345,  90, 401,  98]
+    away_pen5  = [345,  80, 401,  88]
+    away_pen6  = [345,  70, 401,  78]
+    away_pen7  = [345,  60, 401,  68]
+    away_pen8  = [345,  50, 401,  58]
+    away_pen9  = [345,  40, 401,  48]
+    away_pen10 = [345,  30, 401,  38]
+    away_pen11 = [345,  20, 401,  28]
+    away_pen12 = [345,  10, 401,  18]
+    away_pen13 = [ ]
+    away_pen14 = [ ]
+
+    home_batters0 = [25, 696, 100, 706]
+    home_batters1 = [25, 643, 100, 653]
+    home_batters2 = [25, 588, 100, 598]
+    home_batters3 = [25, 538, 100, 548]
+    home_batters4 = [25, 483, 100, 495]
+    home_batters5 = [25, 430, 100, 440]
+    home_batters6 = [25, 377, 100, 387]
+    home_batters7 = [25, 324, 100, 334]
+    home_batters8 = [25, 267, 100, 277]
+
+    home_batter_avgs0 = [ ]
+    home_batter_avgs1 = [ ]
+    home_batter_avgs2 = [ ]
+    home_batter_avgs3 = [ ]
+    home_batter_avgs4 = [ ]
+    home_batter_avgs5 = [ ]
+    home_batter_avgs6 = [ ]
+    home_batter_avgs7 = [ ]
+    home_batter_avgs8 = [ ]
+
+    home_batter_side0 = [ ]
+    home_batter_side1 = [ ]
+    home_batter_side2 = [ ]
+    home_batter_side3 = [ ]
+    home_batter_side4 = [ ]
+    home_batter_side5 = [ ]
+    home_batter_side6 = [ ]
+    home_batter_side7 = [ ]
+    home_batter_side8 = [ ]
+
+    home_starter0      = [25, 137, 100, 147]
+
+    home_starter_eras0 = [ ]
+    home_starter_side0 = [ ]
+
+    away_bench0 = [235, 131, 308, 140]
+    away_bench1 = [235, 121, 308, 130]
+    away_bench2 = [235, 111, 308, 120]
+    away_bench3 = [235, 101, 308, 110]
+    away_bench4 = [235,  91, 308, 100]
+    away_bench5 = [235,  81, 308,  90]
+    away_bench6 = [235,  71, 308,  80]
+
+    home_pen0  = [345, 130, 401, 139]
+    home_pen1  = [345, 120, 401, 129]
+    home_pen2  = [345, 110, 401, 119]
+    home_pen3  = [345, 100, 401, 109]
+    home_pen4  = [345,  90, 401,  99]
+    home_pen5  = [345,  80, 401,  89]
+    home_pen6  = [345,  70, 401,  79]
+    home_pen7  = [345,  60, 401,  69]
+    home_pen8  = [345,  50, 401,  59]
+    home_pen9  = [345,  40, 401,  49]
+    home_pen10 = [345,  30, 401,  39]
+    home_pen11 = [345,  20, 401,  39]
+    home_pen12 = [345,  10, 401,  39]
+    home_pen13 = [ ]
+    home_pen14 = [ ]
+
+elif template == "Lou":
+
+    awayteamrecordgeom = [120, 590, 200, 600]
+    awayteamgeom       = [120, 580, 200, 590]
+
+    # next to scoreboard
+    scoreboard_awayteamgeom = [374, 57, 466, 67]
+    scoreboard_hometeamgeom = [374, 36, 466, 46]
+
+    #------ away card -----
+
+    away_batter_side0 = [52, 542, 62, 552]
+    away_batter_side1 = [52, 506, 62, 516]  # each player y = previous - 36
+    away_batter_side2 = [52, 470, 62, 480]
+    away_batter_side3 = [52, 434, 62, 444]
+    away_batter_side4 = [52, 398, 62, 408]
+    away_batter_side5 = [52, 362, 62, 372]
+    away_batter_side6 = [52, 326, 62, 336]
+    away_batter_side7 = [52, 290, 62, 300]
+    away_batter_side8 = [52, 254, 62, 264]
+
+    away_batters0 = [68, 542, 143, 552]
+    away_batters1 = [68, 506, 143, 516]
+    away_batters2 = [68, 470, 143, 480]
+    away_batters3 = [68, 434, 143, 444]
+    away_batters4 = [68, 398, 143, 408]
+    away_batters5 = [68, 362, 143, 372]
+    away_batters6 = [68, 326, 143, 336]
+    away_batters7 = [68, 290, 143, 300]
+    away_batters8 = [68, 254, 143, 264]
+
+    away_batter_avgs0 = [192, 542, 213, 552]
+    away_batter_avgs1 = [192, 506, 213, 516]
+    away_batter_avgs2 = [192, 470, 213, 480]
+    away_batter_avgs3 = [192, 434, 213, 444]
+    away_batter_avgs4 = [192, 398, 213, 408]
+    away_batter_avgs5 = [192, 362, 213, 372]
+    away_batter_avgs6 = [192, 326, 213, 336]
+    away_batter_avgs7 = [192, 290, 213, 300]
+    away_batter_avgs8 = [192, 254, 213, 264]
+
+    home_starter_side0 = [37,  170,  46, 180]
+    home_starter0      = [67,  170, 144, 180]
+    home_starter_eras0 = [191, 170, 214, 180]
+
+    away_bench0 = [425, 180, 485, 190]
+    away_bench1 = [425, 170, 485, 180]
+    away_bench2 = [425, 160, 485, 170]
+    away_bench3 = [425, 150, 485, 160]
+    away_bench4 = [425, 140, 485, 150]
+    away_bench5 = [425, 130, 485, 140]
+    away_bench6 = [425, 120, 485, 130]
+
+    home_pen0  = [561, 180, 638, 190]
+    home_pen1  = [561, 170, 638, 180]
+    home_pen2  = [561, 160, 638, 170]
+    home_pen3  = [561, 150, 638, 160]
+    home_pen4  = [561, 140, 638, 150]
+    home_pen5  = [561, 130, 638, 140]
+    home_pen6  = [561, 120, 638, 130]
+    home_pen7  = [630, 180, 710, 190]
+    home_pen8  = [630, 170, 710, 180]
+    home_pen9  = [630, 160, 710, 170]
+    home_pen10 = [630, 150, 710, 160]
+    home_pen11 = [630, 140, 710, 150]
+    home_pen12 = [630, 130, 710, 140]
+    home_pen13 = [630, 120, 710, 130]
+    home_pen14 = [630, 110, 710, 120]
+
+    #----- home card ----
+    hometeamrecordgeom = [120, 575, 200, 585]
+    hometeamgeom       = [120, 565, 200, 575]
+
+    home_batter_side0 = [52, 529, 62, 539]
+    home_batter_side1 = [52, 493, 62, 503]  # each player y = previous - 36
+    home_batter_side2 = [52, 457, 62, 467]
+    home_batter_side3 = [52, 421, 62, 431]
+    home_batter_side4 = [52, 385, 62, 395]
+    home_batter_side5 = [52, 349, 62, 359]
+    home_batter_side6 = [52, 313, 62, 323]
+    home_batter_side7 = [52, 277, 62, 287]
+    home_batter_side8 = [52, 241, 62, 251]
+
+    home_batters0 = [68, 529, 143, 539]
+    home_batters1 = [68, 493, 143, 503]
+    home_batters2 = [68, 457, 143, 467]
+    home_batters3 = [68, 421, 143, 431]
+    home_batters4 = [68, 385, 143, 395]
+    home_batters5 = [68, 349, 143, 359]
+    home_batters6 = [68, 313, 143, 323]
+    home_batters7 = [68, 277, 143, 287]
+    home_batters8 = [68, 241, 143, 251]
+
+    home_batter_avgs0 = [192, 529, 213, 539]
+    home_batter_avgs1 = [192, 493, 213, 503]
+    home_batter_avgs2 = [192, 457, 213, 467]
+    home_batter_avgs3 = [192, 421, 213, 431]
+    home_batter_avgs4 = [192, 385, 213, 395]
+    home_batter_avgs5 = [192, 349, 213, 359]
+    home_batter_avgs6 = [192, 313, 213, 323]
+    home_batter_avgs7 = [192, 277, 213, 287]
+    home_batter_avgs8 = [192, 241, 213, 251]
+
+    away_starter_side0 = [37,  157,  46, 167]
+    away_starter0      = [67,  157, 144, 167]
+    away_starter_eras0 = [191, 157, 214, 167]
+
+    home_bench0 = [425, 167, 485, 177]
+    home_bench1 = [425, 157, 485, 167]
+    home_bench2 = [425, 147, 485, 157]
+    home_bench3 = [425, 137, 485, 147]
+    home_bench4 = [425, 127, 485, 137]
+    home_bench5 = [425, 117, 485, 127]
+    home_bench6 = [425, 107, 485, 117]
+
+    away_pen0  = [561, 167, 638, 177]
+    away_pen1  = [561, 157, 638, 167]
+    away_pen2  = [561, 147, 638, 157]
+    away_pen3  = [561, 137, 638, 147]
+    away_pen4  = [561, 127, 638, 137]
+    away_pen5  = [561, 117, 638, 127]
+    away_pen6  = [561, 107, 638, 117]
+    away_pen7  = [630, 167, 710, 177]
+    away_pen8  = [630, 157, 710, 167]
+    away_pen9  = [630, 147, 710, 157]
+    away_pen10 = [630, 137, 710, 147]
+    away_pen11 = [630, 127, 710, 137]
+    away_pen12 = [630, 117, 710, 127]
+    away_pen13 = [630, 107, 710, 117]
+    away_pen14 = [630,  97, 710, 107]
+
+    # home page only for Lou template
+    date_loc   = [395,  40, 465, 50 ]
+
+else:
+    print("unknown or missing template name - exiting")
+    sys.exit(1)
+
+#-----------------------------------------------------
+# define pages and add annotations to PDF template
+#-----------------------------------------------------
+
+page0 = reader.pages[0]
+writer.add_page(page0)
+page1 = reader.pages[1]
+writer.add_page(page1)
+
+# for some reason setting fonts/etc doesn't work
+# although background color in this example does (odd)
+#   writer.add_annotation(page_number=0,
+#          annotation = FreeText(text="Schwarber", rect=(25, 300, 90, 410),
+#          font="Courier", bold=True,italic=True, font_size=20,
+#          font_color="00ff00",border_color="0000ff",background_color="00ff00",))
+
+#--- overwrite it ---
+#
+# item = name of the variable and its location list
+#    example: away_batters[ ] and away_batters0-9
+
+def write_annotation(p,item,qty):
+    players = eval(item)
+    for n in range(qty):
+        loc = eval(item + str(n))
+        try:
+            # this is the default black on transparent
+            writer.add_annotation(page_number=p,annotation=FreeText(text=players[n], rect=loc))
+
+            # background colors
+            #    ff0000 = red , 00ff00 = green, 0000ff = blue, ffff00 = yellow, ff00ff = purple, 00ffff = cyan
+
+            # white on red to show text location rectangles 
+            #writer.add_annotation(page_number=p,annotation=FreeText(text=players[n], rect=loc, font_color="00ff00",border_color="FFFFFF",background_color="FF0000"))
+
+        except:
+            pass
+
+write_annotation(p=0, item="away_batters",       qty=9 )
+write_annotation(p=0, item="away_bench",         qty=7 )
+write_annotation(p=0, item="home_pen",           qty=15)
+write_annotation(p=0, item="home_starter",       qty=1)
+
+write_annotation(p=1, item="home_batters",       qty=9 )
+write_annotation(p=1, item="home_bench",         qty=7 )
+write_annotation(p=1, item="away_pen",           qty=15)
+write_annotation(p=1, item="away_starter",       qty=1)
+
+if template == "Reisner":
+    writer.add_annotation(page_number=1,annotation=FreeText(text=todays_date, rect=date_loc))
+    writer.add_annotation(page_number=1,annotation=FreeText(text=teams[0],    rect=awayteamgeom))
+    writer.add_annotation(page_number=1,annotation=FreeText(text=away_record, rect=awayteamrecordgeom))
+    writer.add_annotation(page_number=1,annotation=FreeText(text=teams[1],    rect=hometeamgeom))
+    writer.add_annotation(page_number=1,annotation=FreeText(text=home_record, rect=hometeamrecordgeom))
+
+if template == "Lou":
+
+    # these don't fit on a portrait orientation template
+    write_annotation(p=0, item="away_batter_avgs",   qty=9)
+    write_annotation(p=1, item="home_batter_avgs",   qty=9)
+
+    write_annotation(p=0, item="home_starter_eras",  qty=1)
+    write_annotation(p=1, item="away_starter_eras",  qty=1)
+
+    write_annotation(p=0, item="away_batter_side",   qty=9)
+    write_annotation(p=1, item="home_batter_side",   qty=9)
+
+    write_annotation(p=0, item="home_starter_side",  qty=1)
+    write_annotation(p=1, item="away_starter_side",  qty=1)
+
+    # scoreboard is on away card only
+    writer.add_annotation(page_number=0,annotation=FreeText(text=away_team,   rect=scoreboard_awayteamgeom))
+    writer.add_annotation(page_number=0,annotation=FreeText(text=home_team,   rect=scoreboard_hometeamgeom))
+
+    # date is on home card only
+    writer.add_annotation(page_number=1,annotation=FreeText(text=todays_date, rect=date_loc))
+
+    # team names and records
+    writer.add_annotation(page_number=0,annotation=FreeText(text=teams[0],    rect=awayteamgeom))
+    writer.add_annotation(page_number=0,annotation=FreeText(text=away_record, rect=awayteamrecordgeom))
+    writer.add_annotation(page_number=1,annotation=FreeText(text=teams[1],    rect=hometeamgeom))
+    writer.add_annotation(page_number=1,annotation=FreeText(text=home_record, rect=hometeamrecordgeom))
+
+print("today = ", todays_date)
+
+#---- all done, write it out ----
+
+with open(output_filename, "wb") as fp:
+    writer.write(fp)
+sys.exit(0)
+
+#-------------------------------------------------
+# this is a game
+#  print(schedule['dates'][0]['games'][0])
+#-------------------------------------------------
+#    {"gamePk": 778424,
+#     "gameGuid": "4d819347-b415-4e92-a159-f6efd40a7f8d",
+#     "link": "/api/v1.1/game/778424/feed/live",
+#     "gameType": "R",
+#     "season": "2025",
+#     "gameDate": "2025-04-07T19:10:00Z",
+#     "officialDate": "2025-04-07",
+#     "status": {"abstractGameState": "Preview",
+#     "codedGameState": "P",
+#     "detailedState": "Pre-Game",
+#     "statusCode": "P",
+#     "startTimeTBD": False,
+#     "abstractGameCode": "P"},
+#     "teams": {
+#        "away": {"leagueRecord": {"wins": 6, "losses": 3, "pct": ".667"},
+#               "score": 0,
+#               "team": {"id": 147, "name": "New York Yankees", "link": "/api/v1/teams/147"},
+#               "splitSquad": False,
+#               "seriesNumber": 4
+#                },
+#         "home": {"leagueRecord": {"wins": 5, "losses": 4, "pct": ".556"},
+#              "score": 0,
+#               "team": {"id": 116, "name": "Detroit Tigers", "link": "/api/v1/teams/116"},
+#               "splitSquad": False,
+#               "seriesNumber": 4}
+#                },
+#     "venue": {"id": 2394, "name": "Comerica Park", "link": "/api/v1/venues/2394"},
+#     "content": {"link": "/api/v1/game/778424/content"},
+#     "gameNumber": 1,
+#     "publicFacing": True,
+#     "doubleHeader": "N",
+#     "gamedayType": "P",
+#     "tiebreaker": "N",
+#     "calendarEventID": "14-778424-2025-04-07",
+#     "seasonDisplay": "2025",
+#     "dayNight": "day",
+#     "scheduledInnings": 9,
+#     "reverseHomeAwayStatus": False,
+#     "inningBreakLength": 120,
+#     "gamesInSeries": 3,
+#     "seriesGameNumber": 1,
+#     "seriesDescription": "Regular Season",
+#     "recordSource": "S",
+#     "ifNecessary": "N",
+#     "ifNecessaryDescription": "Normal Game"
+#    }
+#
+#---------------------------------
+# a batter and their hitting stats
+#   print(statsapi.player_stat_data(shortid, group="[hitting,pitching]",type="season"))
+#---------------------------------
+#
+# {
+#  "id": 669016,
+#  "first_name": "Brandon",
+#  "last_name": "Marsh",
+#  "active": True,
+#  "current_team": "Philadelphia Phillies",
+#  "position": "CF",
+#  "nickname": None,
+#  "last_played": None,
+#  "mlb_debut": "2021-07-18",
+#  "bat_side": "Left",
+#  "pitch_hand": "Right",
+#  "stats":
+#     [
+#         {
+#         "type": "season",
+#         "group": "hitting",
+#         "season": "2025",
+#         "stats": {
+#             "gamesPlayed": 17,
+#             "groundOuts": 12,
+#             "airOuts": 12,
+#             "runs": 3,
+#             "doubles": 0,
+#             "triples": 0,
+#             "homeRuns": 1,
+#             "strikeOuts": 16,
+#             "baseOnBalls": 7,
+#             "intentionalWalks": 0,
+#             "hits": 4,
+#             "hitByPitch": 0,
+#             "avg": ".095",
+#             "atBats": 42,
+#             "obp": ".220",
+#             "slg": ".167",
+#             "ops": ".387",
+#             "caughtStealing": 1,
+#             "stolenBases": 0,
+#             "stolenBasePercentage": ".000",
+#             "groundIntoDoublePlay": 1,
+#             "numberOfPitches": 212,
+#             "plateAppearances": 51,
+#             "totalBases": 7,
+#             "rbi": 5,
+#             "leftOnBase": 27,
+#             "sacBunts": 1,
+#             "sacFlies": 1,
+#             "babip": ".115",
+#             "groundOutsToAirouts": "1.00",
+#             "catchersInterference": 0,
+#             "atBatsPerHomeRun":
+#             "42.00"
+#             }
+#         }
+#     ]
+# }
+#
+#---------------------------------
+# a pitcher and their stats
+#   print(statsapi.player_stat_data(shortid, group="[hitting,pitching]",type="season"))
+#---------------------------------
+#
+# {
+#     "id": 621237,
+#     "first_name": "José",
+#     "last_name": "Alvarado",
+#     "active": True,
+#     "current_team": "Philadelphia Phillies",
+#     "position": "P",
+#     "nickname": "El Pocho",
+#     "last_played": None,
+#     "mlb_debut": "2017-05-03",
+#     "bat_side": "Left",
+#     "pitch_hand": "Left",
+#     "stats": [
+#         {
+#             "type": "season",
+#             "group": "pitching",
+#             "season": "2025",
+#             "stats": {
+#                 "gamesPlayed": 11,
+#                 "gamesStarted": 0,
+#                 "groundOuts": 8,
+#                 "airOuts": 9,
+#                 "runs": 3,
+#                 "doubles": 1,
+#                 "triples": 0,
+#                 "homeRuns": 1,
+#                 "strikeOuts": 15,
+#                 "baseOnBalls": 2,
+#                 "intentionalWalks": 0,
+#                 "hits": 11,
+#                 "hitByPitch": 0,
+#                 "avg": ".256",
+#                 "atBats": 43,
+#                 "obp": ".289",
+#                 "slg": ".349",
+#                 "ops": ".638",
+#                 "caughtStealing": 0,
+#                 "stolenBases": 0,
+#                 "stolenBasePercentage": ".---",
+#                 "groundIntoDoublePlay": 0,
+#                 "numberOfPitches": 190,
+#                 "era": "2.53",
+#                 "inningsPitched": "10.2",
+#                 "wins": 2,
+#                 "losses": 0,
+#                 "saves": 5,
+#                 "saveOpportunities": 5,
+#                 "holds": 2,
+#                 "blownSaves": 0,
+#                 "earnedRuns": 3,
+#                 "whip": "1.22",
+#                 "battersFaced": 45,
+#                 "outs": 32,
+#                 "gamesPitched": 11,
+#                 "completeGames": 0,
+#                 "shutouts": 0,
+#                 "strikes": 126,
+#                 "strikePercentage": ".660",
+#                 "hitBatsmen": 0,
+#                 "balks": 0,
+#                 "wildPitches": 1,
+#                 "pickoffs": 0,
+#                 "totalBases": 15,
+#                 "groundOutsToAirouts": "0.89",
+#                 "winPercentage": "1.000",
+#                 "pitchesPerInning": "17.81",
+#                 "gamesFinished": 7,
+#                 "strikeoutWalkRatio": "7.50",
+#                 "strikeoutsPer9Inn": "12.66",
+#                 "walksPer9Inn": "1.69",
+#                 "hitsPer9Inn": "9.28",
+#                 "runsScoredPer9": "2.53",
+#                 "homeRunsPer9": "0.84",
+#                 "inheritedRunners": 1,
+#                 "inheritedRunnersScored": 0,
+#                 "catchersInterference": 0,
+#                 "sacBunts": 0,
+#                 "sacFlies": 0
+#         }
+#       }
+#     ]
+# }
+#
+#-----------------------------------------------------------

@@ -1,0 +1,77 @@
+
+#----------------------------
+#--- Notes ------------------
+#----------------------------
+
+# This requires the following python modules
+# and was tested using the following versions
+MLB-StatsAPI       1.8.1
+pypdf              5.4.0
+
+#----------------------------
+#--- one-time only setup ----
+#----------------------------
+
+# This was developed using a Mac Mini and python 3.13.0
+# meaning you must use a python virtual environment to
+# install additional requirements.  Don't blame me,
+# that was a decision upstream python made.  Ugh.
+
+# install the python modules
+python3 -m venv mlb-lineup-writer
+source mlb-lineup-writer/bin/activate
+pip3 install MLB-StatsAPI pypdf
+
+# install your input.pdf template file
+cd mlb-lineup-writer
+    copy all these files into that directory
+
+# pick your desired favorite team
+At the top of the python script uncomment the name of your
+desired team.  I highly recommend the Philadelphia Phillies :-)
+
+# lastly....
+Make sure your "input_filename" in the top of mlb-lineup-writer
+points to a PDF template in the same working directory.  The 
+default as shipped here is my customized variant of the generic
+scorecard from thirty91press.com (thanks Lou!)
+
+#----------------------------
+#--- to run the program -----
+#----------------------------
+
+cd mlb-lineup-writer
+source bin/activate
+python3 mlb-lineup-writer
+
+# your output will be in output.pdf in this directory
+# or whatever "output_filename" in the mlb-lineup-writer
+# script points to.
+
+Go appropriately wild :-)
+
+
+#----------------------------
+#-- re: the example output --
+#----------------------------
+
+Browser rendering of the PDF files sometimes results
+in things not looking quite lined up perfectly.  If you
+'download' the PDF and open it, it looks correct and normal.
+
+#----------------------------
+#-- about GoodNotes        --
+#----------------------------
+
+If you AirDrop the output to your iPad it might look odd
+in GoodNotes in that things are surrounded by boxes and 
+are sometimes offset.  I can only guess this has something
+to do with non-visible boxes and the resulting PDF from this
+program.
+
+The workaround is to open the output file in your Mac finder
+and then print to a PDF file, and then AirDrop 'that' PDF.
+That printed-to-file PDF will look as expected in GoodNotes.
+
+Weird to say the least.
+
