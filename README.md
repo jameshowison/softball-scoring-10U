@@ -11,6 +11,10 @@ In the repo is:
 - a printable HTML file (portrait and landscape) that can be used (although see bottom for plain notepad paper approach)
 - a script (Claude written) for creating the HTML file, could be used for customization
 
+Here's a visual example, ironically scoring a college game.
+
+![](example_score_sheet.png)
+
 ## How to use
 
 This system is **action-centric**. Each row accumulates pitches until an action occurs that changes the game state — a batter action (a hit! an out!), or a runner movement (a steal, wild pitch, runs scored). It's 10U softball, so runners advancing on passed balls and overthrows are a big part of things, not to mention exciting tags at home (dropped 3rd strikes, anyone?)
