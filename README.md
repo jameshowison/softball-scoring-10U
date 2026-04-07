@@ -1,8 +1,17 @@
-# Scoring 10U Softball: A Pitch-by-Pitch Tutorial
+# Scoring 10U Softball
 
 ## Why a Different Scoresheet?
 
 10U softball is chaos. Walks load the bases, passed balls move everyone, overthrows score runs nobody earned. Standard scoresheets—built for tidy innings with outs—fall apart when an inning has twelve batters and four runs before anyone makes contact.
+
+This repo contains a scoresheet adapted for the joys of 10U softball.  Sure, someone is probably poking at their phone with some online play by play tracking system, but paper is fun too.
+
+In the repo is:
+- a tutorial explanation of the scoring approach (rest of this README)
+- a printable HTML file (portrait and landscape) that can be used (although see bottom for plain notepad paper approach)
+- a script (Claude written) for creating the HTML file, could be used for customization
+
+## How to use
 
 This system is **action-centric**. Each row accumulates pitches until an action occurs that changes the game state — a batter action (a hit! an out!), or a runner movement (a steal, wild pitch, runs scored). It's 10U softball, so runners advancing on passed balls and overthrows are a big part of things, not to mention exciting tags at home (dropped 3rd strikes, anyone?)
 
