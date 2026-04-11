@@ -144,6 +144,10 @@ A first-pitch swinging strike then two balls: `/..`
 
 These marks never cause a new row on their own. They just accumulate until something happens — and the result goes in the Plate column.
 
+## Optional pitch quality tracking
+
+The standard pitch marks capture count and contact but not pitch location or quality. Six optional location marks extend the pitch column for coaches who want post-game quality data. For wild balls: w (wild, direction unspecified), or the more precise v (in the dirt), ^ (high), < (way left), > (way right). For hit-by-pitch: h in the Pitches column alongside HBP in Plate. These are written as single lowercase characters in the pitch sequence exactly like p (passed ball).
+Swinging strikes (/) are the one ambiguous mark — the batter may have chased a bad pitch. To flag a chase, write the location modifier spatially on the /: a v written below the slash means she chased a ball in the dirt, ^ above means she chased a high one. The slash itself stays countable as a strike; the modifier is a superscript annotation. A called strike (') needs no modifier — the umpire confirmed it was in the zone.​​​​​​​​​​​​​​​​
 ---
 
 ## How At-Bats End: Batter Results
