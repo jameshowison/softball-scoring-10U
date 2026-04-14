@@ -1,0 +1,7 @@
+.DS_Store
+node_modules/
+package.json
+package-lock.json
+boxscore_zoom.png
+print_preview.pdf
+plan.md

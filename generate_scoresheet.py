@@ -23,9 +23,9 @@ COLUMNS = [
     ('col-ab',    'Batter',  22),
     ('col-p',     'Pitches', 15),
     ('col-plate', 'Plate',   12),
-    ('col-b',     '1B',      12),
-    ('col-b',     '2B',      12),
-    ('col-b',     '3B',      12),
+    ('col-b1',    '1B',      12),
+    ('col-b2',    '2B',      12),
+    ('col-b3',    '3B',      12),
     ('col-home',  'HOME',    15),
 ]
 
@@ -67,7 +67,7 @@ def build_html(size, orientation, margin_in, row_height_px):
 
     # ── Table markup ──────────────────────────────────────────────────────────
     header_cells = ''.join(f'<th class="{cls}">{lbl}</th>' for cls, lbl, _ in COLUMNS)
-    empty_cells  = ''.join('<td><div></div></td>' for _ in COLUMNS)
+    empty_cells  = ''.join(f'<td class="{cls}"><div></div></td>' for cls, _, _ in COLUMNS)
     data_row     = f'        <tr>{empty_cells}</tr>'
     tbody_rows   = '\n'.join(data_row for _ in range(rows))
 
@@ -82,14 +82,34 @@ def build_html(size, orientation, margin_in, row_height_px):
     # ── Page content (topline + two zones) ────────────────────────────────────
     page_block = f'''\
 <div class="topline">
-  <div class="header-field fixed-md"><label>AWAY</label><div class="underline"></div></div>
-  <div class="header-field fixed-sm"><label>PITCHER</label><div class="underline"></div></div>
-  <div class="game-details">
-    <div class="header-field fixed-md"><label>DATE</label><div class="underline"></div></div>
-    <div class="header-field fixed-sm"><label>FIELD</label><div class="underline"></div></div>
+  <div class="topline-zone">
+    <div class="tl-col-batter">
+      <div class="tl-field"><label>AWAY TEAM</label><div class="underline"></div></div>
+    </div>
+    <div class="tl-col-pitches">
+      <div class="tl-field"><label>PITCHER</label><div class="underline"></div></div>
+    </div>
+    <div class="tl-skip"></div>
+    <div class="tl-df-block">
+      <div class="tl-field"><label>DATE</label><div class="underline"></div></div>
+      <div class="tl-field"><label>FIELD</label><div class="underline"></div></div>
+    </div>
   </div>
-  <div class="header-field fixed-sm"><label>PITCHER</label><div class="underline"></div></div>
-  <div class="header-field fixed-md"><label>HOME</label><div class="underline"></div></div>
+  <div class="topline-zone">
+    <div class="tl-col-batter">
+      <div class="tl-field"><label>HOME TEAM</label><div class="underline"></div></div>
+    </div>
+    <div class="tl-col-pitches">
+      <div class="tl-field"><label>PITCHER</label><div class="underline"></div></div>
+    </div>
+    <div class="tl-skip"></div>
+    <div class="tl-box-score">
+      <table class="bs-table"><tbody>
+        <tr><td class="bs-label">Away</td><td class="bs-cell"><div class="bs-inner"></div></td><td class="bs-cell"><div class="bs-inner"></div></td><td class="bs-cell"><div class="bs-inner"></div></td><td class="bs-cell"><div class="bs-inner"></div></td><td class="bs-cell"><div class="bs-inner"></div></td></tr>
+        <tr><td class="bs-label">Home</td><td class="bs-cell"><div class="bs-inner"></div></td><td class="bs-cell"><div class="bs-inner"></div></td><td class="bs-cell"><div class="bs-inner"></div></td><td class="bs-cell"><div class="bs-inner"></div></td><td class="bs-cell"><div class="bs-inner"></div></td></tr>
+      </tbody></table>
+    </div>
+  </div>
 </div>
 <div class="page">
   <div class="zone">
@@ -108,7 +128,7 @@ def build_html(size, orientation, margin_in, row_height_px):
 <meta charset="utf-8">
 <title>10U Softball Scoresheet</title>
 <style>
-  @page {{ size: {size} {orientation}; margin: {margin_in}in; }}
+  @page {{ size: {size} {orientation}; margin: 0 {margin_in}in; }}
   * {{ box-sizing: border-box; margin: 0; padding: 0; }}
   body {{
     font-family: monospace;
@@ -118,34 +138,28 @@ def build_html(size, orientation, margin_in, row_height_px):
   }}
 
   /* ── Top line ── */
-  .topline {{
-    display: flex;
-    align-items: flex-end;
-    margin-bottom: 8px;
-    gap: 0.15in;
-  }}
-  .topline .game-details {{
-    display: flex;
-    flex: 1;
-    justify-content: center;
-    gap: 0.2in;
-    align-items: flex-end;
-  }}
-  .header-field {{ display: flex; flex-direction: column; align-items: flex-start; gap: 2px; }}
-  .header-field label {{ font-weight: bold; font-size: 7pt; color: #444; letter-spacing: 0.5px; }}
-  .header-field .underline {{ border-bottom: 0.75pt solid #333; height: 14px; }}
-  .header-field.fixed-sm .underline {{ width: 0.9in; }}
-  .header-field.fixed-md .underline {{ width: 1.4in; }}
-  .fillline {{
-    display: inline-block;
-    border-bottom: 0.75pt solid #333;
-    vertical-align: baseline;
-    margin-left: 3px;
-  }}
-  .fillline.short {{ width: 0.8in; }}
+  .topline {{ display: flex; gap: {GAP_IN}in; margin-bottom: 6px; }}
+  .topline-zone {{ flex: 1; min-width: 0; display: flex; align-items: stretch; }}
+  /* each column slot matches the table column widths */
+  .tl-col-batter  {{ width: 22%; flex-shrink: 0; padding-right: 0.04in; display: flex; }}
+  .tl-col-pitches {{ width: 15%; flex-shrink: 0; padding-right: 0.04in; display: flex; }}
+  /* Plate(12%) + 1B(12%) = 24% — empty spacer in left zone */
+  .tl-skip {{ width: 24%; flex-shrink: 0; }}
+  /* 2B+3B+HOME = 39% — date/field in left zone */
+  .tl-df-block {{ width: 39%; flex-shrink: 0; display: flex; align-items: stretch; gap: 0.1in; }}
+  /* remaining right zone space — box score (same flex technique as .zone) */
+  .tl-box-score {{ flex: 1; min-width: 0; padding-right: 1pt; padding-top: 6px; }}
+  .tl-field {{ display: flex; flex-direction: column; justify-content: space-between; flex: 1; min-width: 0; }}
+  .tl-field label {{ font-weight: bold; font-size: 7pt; color: #444; letter-spacing: 0.5px; white-space: nowrap; padding-top: 6px; }}
+  .tl-field .underline {{ border-bottom: 0.75pt solid #333; height: 14px; }}
+  /* ── Box score — fixed layout + percentage widths, matching main table ── */
+  .bs-table {{ border-collapse: collapse; table-layout: fixed; width: calc(100% - 2pt); }}
+  .bs-label {{ width: 26%; font-size: 7pt; font-weight: bold; color: #444; padding-right: 3px; white-space: nowrap; border: none; text-align: right; vertical-align: middle; }}
+  .bs-cell {{ border: 0.5pt solid #666; padding: 0; }}
+  .bs-inner {{ height: {row_height_px - 3}px; line-height: {row_height_px - 3}px; display: block; }}
 
   /* ── Grids ── */
-  .page  {{ display: flex; gap: {GAP_IN}in; width: 100%; }}
+  .page  {{ display: flex; gap: {GAP_IN}in; width: 100%; padding-right: 1pt; }}
   .zone  {{ flex: 1; min-width: 0; }}
   table  {{ width: 100%; border-collapse: collapse; table-layout: fixed; }}
 
@@ -164,6 +178,7 @@ def build_html(size, orientation, margin_in, row_height_px):
   }}
   th.col-ab {{ text-align: left; padding-left: 3px; }}
   th.col-p  {{ text-align: left; padding-left: 3px; }}
+  td.col-b1, td.col-b3 {{ background-color: #f0f0f0; }}
   tr:nth-child(5n) td {{ background-color: #e8e8e8; }}
 
   .page-break {{ page-break-after: always; }}

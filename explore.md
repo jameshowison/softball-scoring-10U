@@ -19,3 +19,14 @@
 - Or just leave a small space (`..x1  `) — simpler but less distinct
 
 **Open question:** Whether `xF8` reads comfortably enough in a wider pitch cell, or feels cramped.
+
+## Completed tasks
+
+### Light grey shading on 1B and 3B columns
+
+Added `background-color: #f0f0f0` to the 1B and 3B data cells to visually distinguish them from 2B and HOME. Changes made in `generate_scoresheet.py`:
+
+- Renamed the shared `col-b` CSS class to distinct `col-b1`, `col-b2`, `col-b3` classes so 1B and 3B can be targeted independently.
+- Added classes to `td` elements in body rows (they previously had no class, so column-targeted CSS rules had no effect).
+- Added CSS rule `td.col-b1, td.col-b3 { background-color: #f0f0f0; }`.
+- Regenerated `scoresheet_letter_landscape.html` and `scoresheet_letter_portrait.html`.
