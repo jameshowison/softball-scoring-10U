@@ -128,6 +128,23 @@ Options 1 and 2 are complementary to Option 3. The design question for 1 vs 2 is
 
 ---
 
+## One row per batter, multiple at-bats per row
+
+**Concept:** Instead of one row per event, dedicate one row per batter and give each batter N fixed at-bat slots across the row (e.g. 4 columns, one per time through the order). The batter name is written once on the left; subsequent plate appearances reuse the same row.
+
+**Savings:** Eliminates repeated batter-name writing for batters who come up multiple times. A typical 10U game has 10–12 batters cycling 2–3 times — that's 20–30 fewer name entries per team.
+
+**Layout:** Could fit on portrait orientation with the sheet split horizontally — top half Away team, bottom half Home team. Each half would have a batter list on the left and 4 at-bat columns across. Within each at-bat cell, pitches and result are written compactly.
+
+**Open questions:**
+- Runner tracking is the hard part — there's no natural place for base-column snapshots mid-at-bat. Either lose runner tracking entirely (result-only) or add a small base diagram per at-bat cell (Reisner-style).
+- Run limits and chaos innings: a single at-bat can span many runner events; the fixed cell size may not accommodate a long sequence.
+- This trades the action-centric timeline (read top-to-bottom) for a batter-centric view (read across). Good for post-game stats lookup, worse for reconstructing inning sequence.
+
+**Not yet implemented.**
+
+---
+
 ## Merge Pitch and Plate column?
 
 **Current:** Separate Plate column holds contact results, strikeouts, and runner-action codes.
