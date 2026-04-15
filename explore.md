@@ -66,6 +66,68 @@ The line count problem (too many sparse rows) is real and worth solving, but the
 
 ---
 
+## Reducing row count: options within the action-centric layout
+
+The sheet uses one row per runner event (PB, WP, SB) because each event forces a row break so the base columns can snapshot runner positions. In a chaotic inning this produces many rows where the Pitches box holds just a single pitch mark. Three approaches were identified.
+
+### Option 1: Batch consecutive runner actions into one row
+
+**Rule change:** Runner actions (PB, WP, SB, BLK) no longer force a row break on their own. Only batter results (hit, out, BB, K, HBP) end a row. Multiple runner actions accumulate in the Plate column; base columns show the cumulative final positions after all of them.
+
+Before:
+```
+Bea#4  | .   | PB  |     | -->  |      |     |
+       | /   | PB  |     |      | -->  |     |
+       | ./x | 1B  | --> |      |      | --> R1
+```
+
+After:
+```
+Bea#4  | ././x | PB PB 1B | --> |      | --> | --> R1
+```
+
+**Savings:** In a 3-PB inning, 3 sparse rows collapse to 0.
+
+**Cost:** Intermediate snapshots are lost. You can't tell from the base columns that the runner was at 2B between the two PBs — only that they ended at 3B. The Plate column needs a bit more width for entries like `PB PB` or `SB BB`.
+
+**Precedent in the existing system:** Multi-base hits already skip intermediate bases in the base columns (a triple draws one line directly to 3B). Batching consecutive runner actions extends the same principle.
+
+---
+
+### Option 2: Inline runner event annotations on pitch marks
+
+**Rule change:** Runner actions are encoded as annotations on the pitch mark where they occurred, rather than ending the row. The row only ends on a batter result. Base columns update only at the batter result.
+
+Concept: a superscript or suffix notation on the pitch mark — e.g., `.↑` or `.pb` — signals that a passed ball happened on that pitch without consuming a new row.
+
+**Savings:** Maximum. Runner events cost zero rows; only batter results consume rows.
+
+**Cost:** Base columns no longer snapshot runner state at all during an at-bat — only the final state after the batter result is shown. Runner position mid-at-bat must be reconstructed by reading the pitch string annotations. Also requires agreeing on a notation that is fast to write by hand without ambiguity.
+
+---
+
+### Option 3: Physical row compression
+
+**No logic change.** Reduce the printed row height so more rows fit per page.
+
+**Savings:** Proportional to height reduction, without any change to the scoring rules.
+
+**Cost:** Less writing space per row, which may matter for the Pitches box on long at-bats or for notes in the base columns.
+
+---
+
+### Comparison
+
+| Option | Row savings | Intermediate snapshots | Notation change |
+|--------|-------------|----------------------|-----------------|
+| 1 — Batch runner actions | High | Lost (final state only) | Plate column wider |
+| 2 — Inline annotations | Maximum | Lost entirely | New pitch annotation syntax |
+| 3 — Physical compression | Medium | Preserved | None |
+
+Options 1 and 2 are complementary to Option 3. The design question for 1 vs 2 is how much the per-event runner snapshot matters in practice — Option 1 preserves it across batter results; Option 2 abandons it entirely in favour of zero runner-event rows.
+
+---
+
 ## Merge Pitch and Plate column?
 
 **Current:** Separate Plate column holds contact results, strikeouts, and runner-action codes.
