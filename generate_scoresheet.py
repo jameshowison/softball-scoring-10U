@@ -29,8 +29,20 @@ COLUMNS = [
     ('col-home',  'HOME',    15),
 ]
 
+# 2-up-landscape: narrow base cols, HOME = 2× 1B
+COLUMNS_2UP = [
+    ('col-ab',    'Batter',  28),
+    ('col-p',     'Pitches', 22),
+    ('col-plate', 'Plate',   14),
+    ('col-b1',    '1B',       8),
+    ('col-b2',    '2B',       8),
+    ('col-b3',    '3B',       8),
+    ('col-home',  'HOME',    12),
+]
+
 # ── Layout constants ───────────────────────────────────────────────────────────
-GAP_IN            = 0.25   # gap between the two zones (inches)
+GAP_IN            = 0.125  # gap between zones within a mini-page (inches)
+PAGE_GAP_IN       = 0.175  # gap between the two mini-pages in 2-up layout
 PX_PER_IN         = 96     # CSS reference pixels per inch
 TOPLINE_HEIGHT_PX = 36     # topline div + margin-bottom (approximate)
 THEAD_HEIGHT_PX   = 16     # single header row
@@ -48,26 +60,37 @@ def calculate_rows(page_h_mm, margin_mm, row_height_px):
     return math.floor((usable_px - overhead_px) / row_height_px)
 
 
-def build_html(size, orientation, margin_in, row_height_px):
+def build_html(size, orientation, margin_in, row_height_px, layout='standard'):
+    columns = COLUMNS_2UP if layout == '2up-landscape' else COLUMNS
+
+    if layout == '2up-landscape':
+        orientation = 'landscape'
+
     pw_mm, ph_mm = PAGE_SIZES[size]
     if orientation == 'landscape':
         pw_mm, ph_mm = ph_mm, pw_mm
 
     margin_mm = in_to_mm(margin_in)
-    rows      = calculate_rows(ph_mm, margin_mm, row_height_px)
+
+    if layout == '2up-landscape':
+        # No topline overhead; use conservative height estimate
+        usable_px = mm_to_px(ph_mm - 2 * margin_mm)
+        rows = math.floor((usable_px - THEAD_HEIGHT_PX) / row_height_px)
+    else:
+        rows = calculate_rows(ph_mm, margin_mm, row_height_px)
 
     # ── CSS column rules (percentages, one rule per unique class) ─────────────
     seen = {}
     col_rules = []
-    for cls, _, pct in COLUMNS:
+    for cls, _, pct in columns:
         if cls not in seen:
             col_rules.append(f'  .{cls} {{ width: {pct}%; }}')
             seen[cls] = True
     col_css = '\n'.join(col_rules)
 
     # ── Table markup ──────────────────────────────────────────────────────────
-    header_cells = ''.join(f'<th class="{cls}">{lbl}</th>' for cls, lbl, _ in COLUMNS)
-    empty_cells  = ''.join(f'<td class="{cls}"><div></div></td>' for cls, _, _ in COLUMNS)
+    header_cells = ''.join(f'<th class="{cls}">{lbl}</th>' for cls, lbl, _ in columns)
+    empty_cells  = ''.join(f'<td class="{cls}"><div></div></td>' for cls, _, _ in columns)
     data_row     = f'        <tr>{empty_cells}</tr>'
     tbody_rows   = '\n'.join(data_row for _ in range(rows))
 
@@ -79,8 +102,29 @@ def build_html(size, orientation, margin_in, row_height_px):
       </tbody>
     </table>'''
 
-    # ── Page content (topline + two zones) ────────────────────────────────────
-    page_block = f'''\
+    # ── Page content ──────────────────────────────────────────────────────────
+    if layout == '2up-landscape':
+        page_block = f'''\
+<div class="page-2up">
+  <div class="mini-page">
+    <div class="zone">
+{table}
+    </div>
+    <div class="zone">
+{table}
+    </div>
+  </div>
+  <div class="mini-page">
+    <div class="zone">
+{table}
+    </div>
+    <div class="zone">
+{table}
+    </div>
+  </div>
+</div>'''
+    else:
+        page_block = f'''\
 <div class="topline">
   <div class="topline-zone">
     <div class="tl-col-batter">
@@ -121,22 +165,13 @@ def build_html(size, orientation, margin_in, row_height_px):
 </div>'''
 
     # ── Full HTML ──────────────────────────────────────────────────────────────
-    html = f'''\
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="utf-8">
-<title>10U Softball Scoresheet</title>
-<style>
-  @page {{ size: {size} {orientation}; margin: 0 {margin_in}in; }}
-  * {{ box-sizing: border-box; margin: 0; padding: 0; }}
-  body {{
-    font-family: monospace;
-    font-size: 8pt;
-    -webkit-print-color-adjust: exact;
-    print-color-adjust: exact;
-  }}
-
+    if layout == '2up-landscape':
+        extra_css = f'''\
+  /* ── 2-up layout ── */
+  .page-2up  {{ display: flex; gap: {PAGE_GAP_IN}in; width: 100%; padding-right: 1pt; }}
+  .mini-page {{ flex: 1; min-width: 0; display: flex; gap: {GAP_IN}in; }}'''
+    else:
+        extra_css = f'''\
   /* ── Top line ── */
   .topline {{ display: flex; gap: {GAP_IN}in; margin-bottom: 6px; }}
   .topline-zone {{ flex: 1; min-width: 0; display: flex; align-items: stretch; }}
@@ -157,9 +192,28 @@ def build_html(size, orientation, margin_in, row_height_px):
   .bs-label {{ width: 26%; font-size: 7pt; font-weight: bold; color: #444; padding-right: 3px; white-space: nowrap; border: none; text-align: right; vertical-align: middle; }}
   .bs-cell {{ border: 0.5pt solid #666; padding: 0; }}
   .bs-inner {{ height: {row_height_px - 3}px; line-height: {row_height_px - 3}px; display: block; }}
+  /* ── Standard grid ── */
+  .page  {{ display: flex; gap: {GAP_IN}in; width: 100%; padding-right: 1pt; }}'''
 
-  /* ── Grids ── */
-  .page  {{ display: flex; gap: {GAP_IN}in; width: 100%; padding-right: 1pt; }}
+    html = f'''\
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>10U Softball Scoresheet</title>
+<style>
+  @page {{ size: {size} {orientation}; margin: 0 {margin_in}in; }}
+  * {{ box-sizing: border-box; margin: 0; padding: 0; }}
+  body {{
+    font-family: monospace;
+    font-size: 8pt;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }}
+
+{extra_css}
+
+  /* ── Shared grid ── */
   .zone  {{ flex: 1; min-width: 0; }}
   table  {{ width: 100%; border-collapse: collapse; table-layout: fixed; }}
 
@@ -202,14 +256,18 @@ def main():
     parser = argparse.ArgumentParser(description='Generate 10U softball scoresheet')
     parser.add_argument('--size',        choices=list(PAGE_SIZES.keys()), default='letter')
     parser.add_argument('--orientation', choices=['landscape', 'portrait'],  default='landscape')
+    parser.add_argument('--layout',      choices=['standard', '2up-landscape'], default='standard')
     parser.add_argument('--margin',      type=float, default=0.4,  help='Margin in inches')
     parser.add_argument('--row-height',  type=int,   default=24,   help='Row height in px')
     args = parser.parse_args()
 
-    html, rows = build_html(args.size, args.orientation, args.margin, args.row_height)
+    html, rows = build_html(args.size, args.orientation, args.margin, args.row_height, args.layout)
 
     outdir   = os.path.dirname(os.path.abspath(__file__))
-    filename = f'scoresheet_{args.size}_{args.orientation}.html'
+    if args.layout == '2up-landscape':
+        filename = f'scoresheet_{args.size}_2up_landscape.html'
+    else:
+        filename = f'scoresheet_{args.size}_{args.orientation}.html'
     outpath  = os.path.join(outdir, filename)
 
     with open(outpath, 'w') as f:

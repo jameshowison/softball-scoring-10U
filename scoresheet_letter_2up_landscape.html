@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>10U Softball Scoresheet</title>
+<style>
+  @page { size: letter landscape; margin: 0 0.4in; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: monospace;
+    font-size: 8pt;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  /* ── 2-up layout ── */
+  .page-2up  { display: flex; gap: 0.175in; width: 100%; padding-right: 1pt; }
+  .mini-page { flex: 1; min-width: 0; display: flex; gap: 0.125in; }
+
+  /* ── Shared grid ── */
+  .zone  { flex: 1; min-width: 0; }
+  table  { width: 100%; border-collapse: collapse; table-layout: fixed; }
+
+  /* Column widths (% of zone) */
+  .col-ab { width: 28%; }
+  .col-p { width: 22%; }
+  .col-plate { width: 14%; }
+  .col-b1 { width: 8%; }
+  .col-b2 { width: 8%; }
+  .col-b3 { width: 8%; }
+  .col-home { width: 12%; }
+
+  th, td { border: 0.5pt solid #666; padding: 0; overflow: hidden; white-space: nowrap; }
+  td div  { height: 24px; line-height: 24px; }
+  th {
+    height: 16px;
+    line-height: 16px;
+    text-align: center;
+    font-size: 7pt;
+    font-weight: bold;
+    background: #ccc;
+  }
+  th.col-ab { text-align: left; padding-left: 3px; }
+  th.col-p  { text-align: left; padding-left: 3px; }
+  td.col-b1, td.col-b3 { background-color: #f0f0f0; }
+  tr:nth-child(5n) td { background-color: #e8e8e8; }
+
+  .page-break { page-break-after: always; }
+</style>
+</head>
+<body>
+
+<div class="page-2up">
+  <div class="mini-page">
+    <div class="zone">
+    <table>
+      <thead><tr><th class="col-ab">Batter</th><th class="col-p">Pitches</th><th class="col-plate">Plate</th><th class="col-b1">1B</th><th class="col-b2">2B</th><th class="col-b3">3B</th><th class="col-home">HOME</th></tr></thead>
+      <tbody>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+      </tbody>
+    </table>
+    </div>
+    <div class="zone">
+    <table>
+      <thead><tr><th class="col-ab">Batter</th><th class="col-p">Pitches</th><th class="col-plate">Plate</th><th class="col-b1">1B</th><th class="col-b2">2B</th><th class="col-b3">3B</th><th class="col-home">HOME</th></tr></thead>
+      <tbody>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+      </tbody>
+    </table>
+    </div>
+  </div>
+  <div class="mini-page">
+    <div class="zone">
+    <table>
+      <thead><tr><th class="col-ab">Batter</th><th class="col-p">Pitches</th><th class="col-plate">Plate</th><th class="col-b1">1B</th><th class="col-b2">2B</th><th class="col-b3">3B</th><th class="col-home">HOME</th></tr></thead>
+      <tbody>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+      </tbody>
+    </table>
+    </div>
+    <div class="zone">
+    <table>
+      <thead><tr><th class="col-ab">Batter</th><th class="col-p">Pitches</th><th class="col-plate">Plate</th><th class="col-b1">1B</th><th class="col-b2">2B</th><th class="col-b3">3B</th><th class="col-home">HOME</th></tr></thead>
+      <tbody>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+      </tbody>
+    </table>
+    </div>
+  </div>
+</div>
+
+<div class="page-break"></div>
+
+<div class="page-2up">
+  <div class="mini-page">
+    <div class="zone">
+    <table>
+      <thead><tr><th class="col-ab">Batter</th><th class="col-p">Pitches</th><th class="col-plate">Plate</th><th class="col-b1">1B</th><th class="col-b2">2B</th><th class="col-b3">3B</th><th class="col-home">HOME</th></tr></thead>
+      <tbody>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+      </tbody>
+    </table>
+    </div>
+    <div class="zone">
+    <table>
+      <thead><tr><th class="col-ab">Batter</th><th class="col-p">Pitches</th><th class="col-plate">Plate</th><th class="col-b1">1B</th><th class="col-b2">2B</th><th class="col-b3">3B</th><th class="col-home">HOME</th></tr></thead>
+      <tbody>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+      </tbody>
+    </table>
+    </div>
+  </div>
+  <div class="mini-page">
+    <div class="zone">
+    <table>
+      <thead><tr><th class="col-ab">Batter</th><th class="col-p">Pitches</th><th class="col-plate">Plate</th><th class="col-b1">1B</th><th class="col-b2">2B</th><th class="col-b3">3B</th><th class="col-home">HOME</th></tr></thead>
+      <tbody>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+      </tbody>
+    </table>
+    </div>
+    <div class="zone">
+    <table>
+      <thead><tr><th class="col-ab">Batter</th><th class="col-p">Pitches</th><th class="col-plate">Plate</th><th class="col-b1">1B</th><th class="col-b2">2B</th><th class="col-b3">3B</th><th class="col-home">HOME</th></tr></thead>
+      <tbody>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+        <tr><td class="col-ab"><div></div></td><td class="col-p"><div></div></td><td class="col-plate"><div></div></td><td class="col-b1"><div></div></td><td class="col-b2"><div></div></td><td class="col-b3"><div></div></td><td class="col-home"><div></div></td></tr>
+      </tbody>
+    </table>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
