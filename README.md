@@ -594,6 +594,13 @@ With smaller cells for bases, you might need to write fielding outs at bases `3-
 
 ---
 
+## Project Management
+
+This project is developed in conjunction with AI agents and the
+[job-jobs](https://github.com/jameshowison/how-jobs) task management system.
+Job state, planning documents, and work logs live in the how-jobs repo rather
+than here, keeping this repo focused on the artifact.
+
 ## Design Tradeoffs
 
 ### Why this layout works for 10U
