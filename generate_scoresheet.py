@@ -44,8 +44,9 @@ COLUMNS_2UP = [
 GAP_IN            = 0.125  # gap between zones within a mini-page (inches)
 PAGE_GAP_IN       = 0.175  # gap between the two mini-pages in 2-up layout
 PX_PER_IN         = 96     # CSS reference pixels per inch
-TOPLINE_HEIGHT_PX = 36     # topline div + margin-bottom (approximate)
-THEAD_HEIGHT_PX   = 16     # single header row
+TOPLINE_HEIGHT_PX    = 36  # topline div + margin-bottom (approximate)
+TOPLINE_2UP_HEIGHT_PX = 48 # 2-up topline (~2 scoring rows)
+THEAD_HEIGHT_PX      = 16  # single header row
 
 
 def in_to_mm(inches):
@@ -73,9 +74,9 @@ def build_html(size, orientation, margin_in, row_height_px, layout='standard'):
     margin_mm = in_to_mm(margin_in)
 
     if layout == '2up-landscape':
-        # No topline overhead; use conservative height estimate
         usable_px = mm_to_px(ph_mm - 2 * margin_mm)
-        rows = math.floor((usable_px - THEAD_HEIGHT_PX) / row_height_px)
+        # subtract 2 rows as buffer — borders/rendering eat the theoretical 3px headroom
+        rows = math.floor((usable_px - TOPLINE_2UP_HEIGHT_PX - THEAD_HEIGHT_PX) / row_height_px) - 2
     else:
         rows = calculate_rows(ph_mm, margin_mm, row_height_px)
 
@@ -103,8 +104,30 @@ def build_html(size, orientation, margin_in, row_height_px, layout='standard'):
     </table>'''
 
     # ── Page content ──────────────────────────────────────────────────────────
+    bs_2up_h = (TOPLINE_2UP_HEIGHT_PX - 10) // 2  # box-score row height inside 2up topline
     if layout == '2up-landscape':
         page_block = f'''\
+<div class="topline-2up">
+  <div class="tl2-half">
+    <div class="tl2-field"><label>AWAY TEAM</label><div class="tl2-underline"></div></div>
+    <div class="tl2-field"><label>PITCHER</label><div class="tl2-underline"></div></div>
+    <div class="tl2-field tl2-narrow"><label>DATE</label><div class="tl2-underline"></div></div>
+    <div class="tl2-field tl2-narrow"><label>FIELD</label><div class="tl2-underline"></div></div>
+  </div>
+  <div class="tl2-half">
+    <div class="tl2-field"><label>HOME TEAM</label><div class="tl2-underline"></div></div>
+    <div class="tl2-field"><label>PITCHER</label><div class="tl2-underline"></div></div>
+    <div class="tl2-bs-outer">
+      <div class="tl2-bs-labels"><div>Away</div><div>Home</div></div>
+      <div class="tl2-bs-wrap">
+        <table class="bs-table-2"><tbody>
+          <tr><td class="bs-cell-2"></td><td class="bs-cell-2"></td><td class="bs-cell-2"></td><td class="bs-cell-2"></td><td class="bs-cell-2"></td><td class="bs-cell-2"></td></tr>
+          <tr><td class="bs-cell-2"></td><td class="bs-cell-2"></td><td class="bs-cell-2"></td><td class="bs-cell-2"></td><td class="bs-cell-2"></td><td class="bs-cell-2"></td></tr>
+        </tbody></table>
+      </div>
+    </div>
+  </div>
+</div>
 <div class="page-2up">
   <div class="mini-page">
     <div class="zone">
@@ -167,7 +190,19 @@ def build_html(size, orientation, margin_in, row_height_px, layout='standard'):
     # ── Full HTML ──────────────────────────────────────────────────────────────
     if layout == '2up-landscape':
         extra_css = f'''\
-  /* ── 2-up layout ── */
+  /* ── 2-up topline ── */
+  .topline-2up   {{ display: flex; gap: {PAGE_GAP_IN}in; height: {TOPLINE_2UP_HEIGHT_PX}px; margin-bottom: 3px; padding-right: 2px; }}
+  .tl2-half      {{ flex: 1; min-width: 0; display: flex; gap: 0.05in; align-items: stretch; }}
+  .tl2-field     {{ flex: 1; min-width: 0; display: flex; flex-direction: column; }}
+  .tl2-field label {{ font-weight: bold; font-size: 7pt; color: #444; letter-spacing: 0.5px; white-space: nowrap; padding-top: 2px; }}
+  .tl2-underline {{ border-bottom: 0.75pt solid #333; flex: 0 0 {TOPLINE_2UP_HEIGHT_PX // 2}px; }}
+  .tl2-narrow    {{ flex: 0 0 13%; }}
+  .tl2-bs-outer  {{ flex: 0 0 34%; display: flex; gap: 3px; align-items: stretch; }}
+  .tl2-bs-labels {{ display: flex; flex-direction: column; justify-content: space-around; font-size: 7pt; font-weight: bold; color: #444; white-space: nowrap; }}
+  .tl2-bs-wrap   {{ flex: 1; }}
+  .bs-table-2    {{ border-collapse: collapse; table-layout: fixed; width: 100%; height: 100%; }}
+  .bs-cell-2     {{ border: 0.5pt solid #888; padding: 0; }}
+  /* ── 2-up grid ── */
   .page-2up  {{ display: flex; gap: {PAGE_GAP_IN}in; width: 100%; padding-right: 1pt; }}
   .mini-page {{ flex: 1; min-width: 0; display: flex; gap: {GAP_IN}in; }}'''
     else:
@@ -202,7 +237,7 @@ def build_html(size, orientation, margin_in, row_height_px, layout='standard'):
 <meta charset="utf-8">
 <title>10U Softball Scoresheet</title>
 <style>
-  @page {{ size: {size} {orientation}; margin: 0 {margin_in}in; }}
+  @page {{ size: {size} {orientation}; margin: {margin_in}in; }}
   * {{ box-sizing: border-box; margin: 0; padding: 0; }}
   body {{
     font-family: monospace;
