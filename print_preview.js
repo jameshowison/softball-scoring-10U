@@ -19,6 +19,26 @@ const SHEETS = [
     pdf:  'preview_letter_2up_landscape.pdf',
     format: 'Letter', landscape: true,
   },
+  {
+    html: 'scoresheet_letter_batter_rows_landscape.html',
+    pdf:  'preview_letter_batter_rows_landscape.pdf',
+    format: 'Letter', landscape: true,
+  },
+  {
+    html: 'scoresheet_letter_batter_rows_portrait.html',
+    pdf:  'preview_letter_batter_rows_portrait.pdf',
+    format: 'Letter', landscape: false,
+  },
+  {
+    html: 'scoresheet_letter_tracks_landscape.html',
+    pdf:  'preview_letter_tracks_landscape.pdf',
+    format: 'Letter', landscape: true,
+  },
+  {
+    html: 'scoresheet_letter_tracks_portrait.html',
+    pdf:  'preview_letter_tracks_portrait.pdf',
+    format: 'Letter', landscape: false,
+  },
 ];
 
 (async () => {

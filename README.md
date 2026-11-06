@@ -10,10 +10,15 @@ In the repo is:
 - a tutorial explanation of the scoring approach (rest of this README)
 - a printable HTML file (portrait and landscape) that can be used (although see bottom for plain notepad paper approach)
 - a script (Claude written) for creating the HTML file, could be used for customization
+- a **tracks variant** of the sheet that makes balls and strikes easier to count — see [Tracks Variant](#tracks-variant-easier-ball-and-strike-counts), with a worked example below
 
 Here's a visual example, ironically scoring a college game.
 
 ![](example_score_sheet.png)
+
+And here's the tracks variant, one inning for each team (built by `make_example.py`):
+
+![Tracks variant: a worked example of one inning per team](example_tracks.png)
 
 ## How to use
 
@@ -468,6 +473,50 @@ A batter block is all the rows belonging to one plate appearance. The rules:
 2. Subsequent rows within the same at-bat leave the Batter column blank.
 3. The block ends on exactly one **batter result** in Plate (BB, HBP, hit type, (K), K d3, fielding out), plus any `~` continuation rows that follow.
 4. **Runner actions** (WP, PB, SB, etc.) appear mid-block and do **not** end it.
+
+---
+
+## Tracks Variant: Easier Ball and Strike Counts
+
+In a chaotic at-bat, the standard sheet splits the pitches across several rows, and runner codes (`p`, `w`, `s`) end up mixed in with them. That makes the count hard to read at a glance. The tracks variant uses the same grid, one row per action, with a few changes so the count is always in one place.
+
+```
+python3 generate_scoresheet.py --layout tracks --orientation landscape
+```
+
+![Tracks variant: a worked example of one inning per team](example_tracks.png)
+
+### What changes
+
+- **All pitches go on the batter's first row**, even pitches thrown after a runner action. The pitch box has two tracks: strikes and fouls (`/ ' -`) above the dashed line, balls and contact (`. x`) below. To read the count, tally each track.
+- **Plate holds only the batter's own result**: `x1` `x2` `x3` `x4` for hits (the `x` makes contact easy to spot), `BB`, and outs. **Outs are circled**, not put in parentheses.
+- **Runner actions are written on the runner's line**, not in Plate or among the pitches. A row for a runner action can be completely blank in Plate. The lines that end on that row show what happened.
+- **Rows are a little taller** (30px, up from 24px), giving room for the two tracks and for moves inside a row. `--row-height` changes this. 24px gives 26 rows per team per landscape page, 27px gives 23, and 30px gives 21.
+
+What you give up: the sheet no longer records which pitch a passed ball, wild pitch or steal happened on.
+
+### Drawing runners
+
+- **Moves stay inside their row.** A runner leaves a base near the *top* of the row where the action happened and arrives at the new base near the *bottom* of that row. Because a runner can only take a base after the runner ahead has left it, lines never cross.
+- **Holding a base is a straight vertical line** down that base's column. A diagonal only appears on the row where the runner actually moved.
+- **Put a dot at each occupied base at the start of a new at-bat.** Reading across a batter's first row shows who was on base when they came up.
+- **The batter** draws a horizontal line from Plate into the lower part of the 1B box on their result row.
+- **A stranded runner's** line ends at the inning's double line.
+
+### Marking long at-bats
+
+When an at-bat runs over several rows, draw an **L** on its continuation rows. The vertical stroke runs down the Batter | Pitches border, and the foot goes about 3/5 of the way across the Pitches box at the bottom of the at-bat. Any row with an L has its pitches on the batter's first row above it. Single-row at-bats don't need an L.
+
+### Reading the example
+
+- **Away:** Ava singles (`x1`). Ava steals 2nd during Bea's at-bat, then Bea walks. On Cat's at-bat a passed ball (`p`) moves both runners up, and Cat's single scores Ava (R1). A wild pitch (`w`) in Deb's at-bat scores Bea (R2) before Deb flies out (circled F8). Cat steals 3rd, holds through a K and a 6-3, and is stranded. Next inning, Gia walks and is caught stealing (circled CS).
+- **Home:** four walks in a row (Ivy, Jo, Kim, Lu) force in a run (R1). Jo steals home (`s`, R2) before Mae flies out. In Nia's at-bat a passed ball moves both runners up, then a wild pitch scores Kim (R3) and puts Lu on 3rd. Nia strikes out, and Ola grounds out 4-3 with Lu stranded.
+
+To change the example, edit the game data at the top of `make_example.py` and run it. It rebuilds `example_tracks.html` and, if Chrome is installed, `example_tracks.png`.
+
+### An alternative explored: batter rows
+
+`--layout batter-rows` gives each batter one tall row split into three event sub-rows. The bottom sub-row is always the batter's result. It fits fewer batters per page (13 per team in landscape), and an at-bat can only hold two runner events. It's kept for comparison; see `example_batter_rows.png`.
 
 ---
 

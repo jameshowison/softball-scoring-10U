@@ -6,6 +6,8 @@ Usage:
     python3 generate_scoresheet.py --size letter --orientation landscape
     python3 generate_scoresheet.py --size letter --orientation portrait
     python3 generate_scoresheet.py --size a4 --orientation portrait
+    python3 generate_scoresheet.py --layout batter-rows --orientation landscape
+    python3 generate_scoresheet.py --layout tracks --orientation landscape
 """
 
 import argparse
@@ -40,6 +42,21 @@ COLUMNS_2UP = [
     ('col-home',  'HOME',    12),
 ]
 
+# tracks: one row per action, slightly taller rows; the batter's first row holds
+# every pitch of the at-bat on two tracks (strikes above, balls below), so the
+# Pitches column is wider. Runner-action rows leave Plate blank; p / w / s are
+# written on the runner's line.
+COLUMNS_TRACKS = [
+    ('col-ab',    'Batter',  18),
+    ('col-p',     'Pitches', 26),
+    ('col-plate', 'Plate',   12),
+    ('col-b1',    '1B',      10),
+    ('col-b2',    '2B',      10),
+    ('col-b3',    '3B',      10),
+    ('col-home',  'HOME',    14),
+]
+TRACKS_ROW_PX = 30
+
 # ── Layout constants ───────────────────────────────────────────────────────────
 GAP_IN            = 0.125  # gap between zones within a mini-page (inches)
 PAGE_GAP_IN       = 0.175  # gap between the two mini-pages in 2-up layout
@@ -55,14 +72,19 @@ def in_to_mm(inches):
 def mm_to_px(mm):
     return mm / 25.4 * PX_PER_IN
 
+# Measured in Chrome: the standard topline renders 51px + 6px margin, the header
+# row 18px, and each body row prints ~1px taller than its div (cell borders).
+STD_TOPLINE_PX = 57
+STD_THEAD_PX   = 18
+
 def calculate_rows(page_h_mm, margin_mm, row_height_px):
     usable_px    = mm_to_px(page_h_mm - 2 * margin_mm)
-    overhead_px  = TOPLINE_HEIGHT_PX + THEAD_HEIGHT_PX
-    return math.floor((usable_px - overhead_px) / row_height_px)
+    overhead_px  = STD_TOPLINE_PX + STD_THEAD_PX
+    return math.floor((usable_px - overhead_px) / (row_height_px + 1))
 
 
 def build_html(size, orientation, margin_in, row_height_px, layout='standard'):
-    columns = COLUMNS_2UP if layout == '2up-landscape' else COLUMNS
+    columns = {'2up-landscape': COLUMNS_2UP, 'tracks': COLUMNS_TRACKS}.get(layout, COLUMNS)
 
     if layout == '2up-landscape':
         orientation = 'landscape'
@@ -90,8 +112,16 @@ def build_html(size, orientation, margin_in, row_height_px, layout='standard'):
     col_css = '\n'.join(col_rules)
 
     # ── Table markup ──────────────────────────────────────────────────────────
-    header_cells = ''.join(f'<th class="{cls}">{lbl}</th>' for cls, lbl, _ in columns)
-    empty_cells  = ''.join(f'<td class="{cls}"><div></div></td>' for cls, _, _ in columns)
+    def header_label(cls, lbl):
+        if layout == 'tracks' and cls == 'col-p':
+            return 'Pitches <span class="hint">&#9650;strikes &#9660;balls</span>'
+        return lbl
+    header_cells = ''.join(f'<th class="{cls}">{header_label(cls, lbl)}</th>' for cls, lbl, _ in columns)
+    def empty_cell(cls):
+        if layout == 'tracks' and cls == 'col-p':
+            return '<td class="col-p"><div class="trk trk-s"></div><div class="trk trk-b"></div></td>'
+        return f'<td class="{cls}"><div></div></td>'
+    empty_cells  = ''.join(empty_cell(cls) for cls, _, _ in columns)
     data_row     = f'        <tr>{empty_cells}</tr>'
     tbody_rows   = '\n'.join(data_row for _ in range(rows))
 
@@ -226,9 +256,18 @@ def build_html(size, orientation, margin_in, row_height_px, layout='standard'):
   .bs-table {{ border-collapse: collapse; table-layout: fixed; width: calc(100% - 2pt); }}
   .bs-label {{ width: 26%; font-size: 7pt; font-weight: bold; color: #444; padding-right: 3px; white-space: nowrap; border: none; text-align: right; vertical-align: middle; }}
   .bs-cell {{ border: 0.5pt solid #666; padding: 0; }}
-  .bs-inner {{ height: {row_height_px - 3}px; line-height: {row_height_px - 3}px; display: block; }}
+  .bs-inner {{ height: {min(row_height_px, 24) - 3}px; line-height: {min(row_height_px, 24) - 3}px; display: block; }}
   /* ── Standard grid ── */
   .page  {{ display: flex; gap: {GAP_IN}in; width: 100%; padding-right: 1pt; }}'''
+
+    tracks_css = ''
+    if layout == 'tracks':
+        tracks_css = f'''\
+  /* pitches on two tracks: strikes & fouls above the line, balls below */
+  td.col-p .trk   {{ height: {row_height_px / 2}px; line-height: {row_height_px / 2}px; }}
+  td.col-p .trk-s {{ border-bottom: 0.5pt dashed #999; }}
+  th .hint {{ font-weight: normal; font-size: 6pt; color: #444; }}
+'''
 
     html = f'''\
 <!DOCTYPE html>
@@ -270,7 +309,7 @@ def build_html(size, orientation, margin_in, row_height_px, layout='standard'):
   td.col-b1, td.col-b3 {{ background-color: #f0f0f0; }}
   tr:nth-child(5n) td {{ background-color: #e8e8e8; }}
 
-  .page-break {{ page-break-after: always; }}
+{tracks_css}  .page-break {{ page-break-after: always; }}
 </style>
 </head>
 <body>
@@ -287,20 +326,168 @@ def build_html(size, orientation, margin_in, row_height_px, layout='standard'):
     return html, rows
 
 
+# ── Batter-rows layout: one row per plate appearance, three event sub-rows ────
+# Each batter row is split into three sub-rows, used top to bottom as events
+# happen during the at-bat. The Result column carries the same three slots:
+# the top two for runner events (p w s E4 ...), the bottom one always for the
+# batter's result (x1, BB, K ...). Pitches span the whole row on two tracks:
+# strikes/fouls above the line, balls below. Runners are drawn diagonally from
+# base to base as in the standard sheet, crossing sub-row and row boundaries.
+COLUMNS_BATTER_ROWS = [
+    # cls,          label,     landscape %, portrait %
+    ('col-ab',     'Batter',       17, 17),
+    ('col-p',      'Pitches',      34, 36),
+    ('col-plate',  'Result',       13, 11),
+    ('col-b1',     '1B',            9,  9),
+    ('col-b2',     '2B',            9,  9),
+    ('col-b3',     '3B',            9,  9),
+    ('col-home',   'H',             9,  9),
+]
+SUBROW_PX = 16
+SUBROW_COLS = ('col-plate', 'col-b1', 'col-b2', 'col-b3', 'col-home')
+
+
+def build_batter_rows_html(size, orientation, margin_in, sub_px=SUBROW_PX):
+    pw_mm, ph_mm = PAGE_SIZES[size]
+    if orientation == 'landscape':
+        pw_mm, ph_mm = ph_mm, pw_mm
+    margin_mm = in_to_mm(margin_in)
+
+    row_px     = sub_px * 3
+    topline_px = 40   # page line (date / field / legend / box score)
+    zonehdr_px = 22   # per-zone TEAM / PITCHER line
+    usable_px  = mm_to_px(ph_mm - 2 * margin_mm)
+    rows = math.floor((usable_px - topline_px - zonehdr_px - THEAD_HEIGHT_PX - 12) / row_px)
+
+    pct_idx = 2 if orientation == 'landscape' else 3
+    col_css = '\n'.join(f'  .{c[0]} {{ width: {c[pct_idx]}%; }}' for c in COLUMNS_BATTER_ROWS)
+
+    def cell(cls):
+        if cls == 'col-ab':
+            return '<td class="col-ab"><div class="tall"></div></td>'
+        if cls == 'col-p':
+            return '<td class="col-p"><div class="trk trk-s"></div><div class="trk trk-b"></div></td>'
+        subs = '<div class="sub"></div><div class="sub"></div><div class="sub sub-res"></div>'
+        return f'<td class="{cls}">{subs}</td>'
+
+    cells = ''.join(cell(c[0]) for c in COLUMNS_BATTER_ROWS)
+    labels = {'col-p': 'Pitches <span class="hint">strikes &#9650; &middot; balls &#9660;</span>'}
+    header = ''.join(f'<th class="{c[0]}">{labels.get(c[0], c[1])}</th>' for c in COLUMNS_BATTER_ROWS)
+    body = '\n'.join(f'        <tr>{cells}</tr>' for _ in range(rows))
+
+    def zone(team):
+        return (
+            '  <div class="zone">\n'
+            '    <div class="zonehdr">\n'
+            f'      <div class="zf zf-team"><label>{team}</label><div class="ul"></div></div>\n'
+            '      <div class="zf"><label>PITCHER</label><div class="ul"></div></div>\n'
+            '    </div>\n'
+            '    <table>\n'
+            f'      <thead><tr>{header}</tr></thead>\n'
+            f'      <tbody>\n{body}\n      </tbody>\n'
+            '    </table>\n'
+            '  </div>'
+        )
+
+    def bs_row(lbl):
+        return f'<tr><td class="bs-label">{lbl}</td>' + '<td class="bs-cell"></td>' * 7 + '</tr>'
+
+    topline = (
+        '<div class="br-top">\n'
+        '  <div class="zf zf-narrow"><label>DATE</label><div class="ul"></div></div>\n'
+        '  <div class="zf"><label>FIELD</label><div class="ul"></div></div>\n'
+        '  <div class="legend">Sub-rows = events in order. Result: runner events (p w s E4) top, '
+        'batter result (x1 BB K) bottom.<br>'
+        'Runners: diagonal base to base on the event&rsquo;s sub-row &middot; circle outs &middot; R# in H</div>\n'
+        f'  <table class="bs-table"><tbody>{bs_row("Away")}{bs_row("Home")}</tbody></table>\n'
+        '</div>'
+    )
+
+    if orientation == 'landscape':
+        page = f'{topline}\n<div class="page">\n{zone("AWAY TEAM")}\n{zone("HOME TEAM")}\n</div>'
+        pages = f'{page}\n<div class="page-break"></div>\n{page}'
+    else:
+        pa = f'{topline}\n<div class="page">\n{zone("AWAY TEAM")}\n</div>'
+        ph = f'{topline}\n<div class="page">\n{zone("HOME TEAM")}\n</div>'
+        pages = f'{pa}\n<div class="page-break"></div>\n{ph}'
+
+    css = f'''\
+  @page {{ size: {size} {orientation}; margin: {margin_in}in; }}
+  * {{ box-sizing: border-box; margin: 0; padding: 0; }}
+  body {{ font-family: monospace; font-size: 8pt;
+          -webkit-print-color-adjust: exact; print-color-adjust: exact; }}
+
+  /* ── page top line ── */
+  .br-top {{ display: flex; gap: 0.12in; align-items: flex-end; height: {topline_px}px; margin-bottom: 4px; }}
+  .zf {{ flex: 1; min-width: 0; display: flex; flex-direction: column; }}
+  .zf label {{ font-weight: bold; font-size: 7pt; color: #444; letter-spacing: 0.5px; white-space: nowrap; }}
+  .zf .ul {{ border-bottom: 0.75pt solid #333; height: 14px; }}
+  .zf-narrow {{ flex: 0 0 10%; }}
+  .legend {{ flex: 0 0 40%; font-size: 6pt; color: #555; line-height: 1.3; font-family: sans-serif; }}
+  .bs-table {{ flex: 0 0 24%; border-collapse: collapse; table-layout: fixed; }}
+  .bs-label {{ width: 14%; font-size: 7pt; font-weight: bold; color: #444; text-align: right;
+               padding-right: 3px; border: none; }}
+  .bs-cell  {{ border: 0.5pt solid #888; height: 17px; }}
+
+  /* ── zones ── */
+  .page  {{ display: flex; gap: {GAP_IN * 1.5}in; width: 100%; padding-right: 1pt; }}
+  .zone  {{ flex: 1; min-width: 0; }}
+  .zonehdr {{ display: flex; gap: 0.12in; height: {zonehdr_px}px; margin-bottom: 2px; }}
+  .zf-team {{ flex: 1.4; }}
+
+  table  {{ width: 100%; border-collapse: collapse; table-layout: fixed; }}
+{col_css}
+
+  th, td {{ border: 0.5pt solid #666; padding: 0; overflow: hidden; white-space: nowrap; }}
+  tbody td {{ border-bottom: 1pt solid #333; }}
+  th {{ height: {THEAD_HEIGHT_PX}px; line-height: {THEAD_HEIGHT_PX}px; font-size: 7pt; font-weight: bold;
+        background: #ccc; text-align: left; padding-left: 3px; }}
+  th .hint {{ font-weight: normal; font-size: 6pt; color: #444; }}
+  .tall {{ height: {row_px}px; }}
+
+  /* pitches: two tracks — strikes & fouls above the line, balls below */
+  .trk   {{ height: {row_px // 2}px; }}
+  .trk-s {{ border-bottom: 0.5pt dashed #999; }}
+
+  /* event sub-rows */
+  .sub {{ height: {sub_px}px; position: relative; }}
+  .sub + .sub {{ border-top: 0.5pt dotted #aaa; }}
+  td.col-plate .sub-res {{ border-top: 0.5pt solid #888; }}
+  td.col-b1, td.col-b3 {{ background-color: #f0f0f0; }}
+  td.col-home {{ background-color: #f7f7f7; }}
+
+  .page-break {{ page-break-after: always; }}'''
+
+    html = (
+        '<!DOCTYPE html>\n<html>\n<head>\n<meta charset="utf-8">\n'
+        '<title>10U Softball Scoresheet — Batter Rows</title>\n'
+        f'<style>\n{css}\n</style>\n</head>\n<body>\n\n{pages}\n\n</body>\n</html>\n'
+    )
+    return html, rows
+
+
 def main():
     parser = argparse.ArgumentParser(description='Generate 10U softball scoresheet')
     parser.add_argument('--size',        choices=list(PAGE_SIZES.keys()), default='letter')
     parser.add_argument('--orientation', choices=['landscape', 'portrait'],  default='landscape')
-    parser.add_argument('--layout',      choices=['standard', '2up-landscape'], default='standard')
+    parser.add_argument('--layout',      choices=['standard', '2up-landscape', 'batter-rows', 'tracks'], default='standard')
     parser.add_argument('--margin',      type=float, default=0.4,  help='Margin in inches')
-    parser.add_argument('--row-height',  type=int,   default=24,   help='Row height in px')
+    parser.add_argument('--row-height',  type=int,   default=None, help='Row height in px (default 24; 30 for tracks)')
     args = parser.parse_args()
 
-    html, rows = build_html(args.size, args.orientation, args.margin, args.row_height, args.layout)
+    if args.layout == 'batter-rows':
+        html, rows = build_batter_rows_html(args.size, args.orientation, args.margin)
+    else:
+        row_h = args.row_height or (TRACKS_ROW_PX if args.layout == 'tracks' else 24)
+        html, rows = build_html(args.size, args.orientation, args.margin, row_h, args.layout)
 
     outdir   = os.path.dirname(os.path.abspath(__file__))
     if args.layout == '2up-landscape':
         filename = f'scoresheet_{args.size}_2up_landscape.html'
+    elif args.layout == 'tracks':
+        filename = f'scoresheet_{args.size}_tracks_{args.orientation}.html'
+    elif args.layout == 'batter-rows':
+        filename = f'scoresheet_{args.size}_batter_rows_{args.orientation}.html'
     else:
         filename = f'scoresheet_{args.size}_{args.orientation}.html'
     outpath  = os.path.join(outdir, filename)
