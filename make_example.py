@@ -45,7 +45,8 @@ def circ(text):
 # Each row: (batter, pitches, plate, {base_col: text}, inning_end)
 #   batter/pitches only on an at-bat's first row; base_col 1-3 = 1B-3B, 4 = HOME.
 # Each runner: on = row they reached 1B from Plate;
-#   moves = [row, to_col, label, 'out'?]; through = last row to keep them on base.
+#   moves = [row, to_col, label, 'out' | 'join'?]; through = last row to keep them on base.
+#   'join' ends the move inside column to_col, merging into the batter's line (home runs).
 # at_bats = (first row, last row).
 
 AWAY = {
@@ -70,6 +71,7 @@ AWAY = {
         {'on': 10, 'moves': [[11, 2, 's', 'out']]},                           # Gia
     ],
     'at_bats': [(0, 0), (1, 2), (3, 4), (5, 6), (7, 8), (9, 9), (10, 10), (11, 11)],
+    'summary': [9, 'O:3 H:2/2 R:2/2'],
 }
 
 HOME = {
@@ -92,6 +94,7 @@ HOME = {
         {'on': 3, 'moves': [[6, 2, 'p'], [7, 3, 'w']], 'through': 9},         # Lu (stranded)
     ],
     'at_bats': [(0, 0), (1, 1), (2, 2), (3, 3), (4, 5), (6, 8), (9, 9)],
+    'summary': [9, 'O:3 H:0/0 R:3/3'],
 }
 
 
@@ -136,6 +139,7 @@ CSS = f'''
   tr.inning-end td {{ border-bottom: 3pt double #333; }}
   svg text.cause {{ font-family: "Bradley Hand", cursive; font-weight: bold; font-size: 10.5pt; fill: {INK};
                     paint-order: stroke; stroke: #fff; stroke-width: 3px; }}
+  svg text.summary {{ font-size: 9.5pt; stroke-width: 5px; }}
   svg.overlay {{ position: absolute; left: 0; top: 0; pointer-events: none; }}
 '''
 
@@ -178,8 +182,8 @@ ZONES.forEach((z, zi) => {
                      stroke: INK, 'stroke-width': 1.8, 'stroke-linecap': 'round' });
   });
   z.runners.forEach(rn => {
-    let row = rn.on, col = 1, cur = pt(row, 1, LOW);
-    line(pt(row, 0, LOW), cur, true);               // batter reaches 1B
+    let row = rn.on, col = rn.to || 1, cur = pt(row, col, LOW);
+    line(pt(row, 0, LOW), cur, true);               // batter reaches base (1B unless 'to')
     const holdTo = r => {                           // stay on base down to row r
       for (let rr = row + 1; rr <= r; rr++) {
         const nxt = pt(rr, col, TOP);
@@ -191,14 +195,28 @@ ZONES.forEach((z, zi) => {
     };
     rn.moves.forEach(([r, c, lbl, out]) => {
       holdTo(r);
-      const to = pt(r, c, LOW);
+      let to = pt(r, c, LOW);
+      if (out === 'join') {                         // merge into the batter's line inside column c
+        const d = trs[r].querySelector('td.' + COLS[c]).getBoundingClientRect();
+        to = [d.left + d.width * 0.9 + sx, to[1]];
+      }
       line(cur, to, !out);
       if (lbl) el('text', { x: (cur[0] + to[0]) / 2 + 4, y: (cur[1] + to[1]) / 2 - 3, class: 'cause' })
                  .textContent = lbl;
       cur = to; col = c;
     });
-    if (rn.through) holdTo(rn.through);
+    if (rn.through) {                               // stranded: hold down to the double line
+      holdTo(rn.through);
+      const end = pt(rn.through, col, 1.0);
+      line(cur, end, false);
+    }
   });
+  if (z.summary) {                                  // inning summary written on the double line
+    const [r, txt] = z.summary;
+    const d = trs[r].getBoundingClientRect();
+    el('text', { x: d.right - 6 + sx, y: d.bottom + 14 + sy, 'text-anchor': 'end', class: 'cause summary' })
+      .textContent = txt;
+  }
 });
 '''
 
@@ -207,7 +225,7 @@ def build():
     html, _ = g.build_html('letter', 'landscape', 0.4, g.TRACKS_ROW_PX, 'tracks')
     html = fill_zone(html, 0, AWAY['rows'])
     html = fill_zone(html, 1, HOME['rows'])
-    zones = [{k: z[k] for k in ('runners', 'at_bats')} for z in (AWAY, HOME)]
+    zones = [{k: z[k] for k in ('runners', 'at_bats', 'summary') if k in z} for z in (AWAY, HOME)]
     script = (f'<script>\nconst INK = "{INK}";\nconst ZONES = {json.dumps(zones)};\n'
               f'{DRAW_JS}</script>\n')
     html = html.replace('</style>', CSS + '</style>', 1).replace('</body>', script + '</body>', 1)

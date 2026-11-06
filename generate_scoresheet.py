@@ -3,11 +3,11 @@
 Generate 10U softball scoresheet HTML.
 
 Usage:
-    python3 generate_scoresheet.py --size letter --orientation landscape
-    python3 generate_scoresheet.py --size letter --orientation portrait
-    python3 generate_scoresheet.py --size a4 --orientation portrait
-    python3 generate_scoresheet.py --layout batter-rows --orientation landscape
-    python3 generate_scoresheet.py --layout tracks --orientation landscape
+    python3 generate_scoresheet.py                          # tracks layout, letter landscape
+    python3 generate_scoresheet.py --orientation portrait
+    python3 generate_scoresheet.py --size a4
+    python3 generate_scoresheet.py --layout standard        # older layouts, kept for comparison
+    python3 generate_scoresheet.py --layout batter-rows
 """
 
 import argparse
@@ -470,7 +470,7 @@ def main():
     parser = argparse.ArgumentParser(description='Generate 10U softball scoresheet')
     parser.add_argument('--size',        choices=list(PAGE_SIZES.keys()), default='letter')
     parser.add_argument('--orientation', choices=['landscape', 'portrait'],  default='landscape')
-    parser.add_argument('--layout',      choices=['standard', '2up-landscape', 'batter-rows', 'tracks'], default='standard')
+    parser.add_argument('--layout',      choices=['standard', '2up-landscape', 'batter-rows', 'tracks'], default='tracks')
     parser.add_argument('--margin',      type=float, default=0.4,  help='Margin in inches')
     parser.add_argument('--row-height',  type=int,   default=None, help='Row height in px (default 24; 30 for tracks)')
     args = parser.parse_args()

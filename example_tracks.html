@@ -82,6 +82,7 @@
   tr.inning-end td { border-bottom: 3pt double #333; }
   svg text.cause { font-family: "Bradley Hand", cursive; font-weight: bold; font-size: 10.5pt; fill: #1a3fa0;
                     paint-order: stroke; stroke: #fff; stroke-width: 3px; }
+  svg text.summary { font-size: 9.5pt; stroke-width: 5px; }
   svg.overlay { position: absolute; left: 0; top: 0; pointer-events: none; }
 </style>
 </head>
@@ -269,7 +270,7 @@
 
 <script>
 const INK = "#1a3fa0";
-const ZONES = [{"runners": [{"on": 0, "moves": [[1, 2, "s"], [3, 3, "p"], [4, 4]]}, {"on": 2, "moves": [[3, 2, "p"], [4, 3], [5, 4, "w"]]}, {"on": 4, "moves": [[5, 2, "w"], [7, 3, "s"]], "through": 9}, {"on": 10, "moves": [[11, 2, "s", "out"]]}], "at_bats": [[0, 0], [1, 2], [3, 4], [5, 6], [7, 8], [9, 9], [10, 10], [11, 11]]}, {"runners": [{"on": 0, "moves": [[1, 2], [2, 3], [3, 4]]}, {"on": 1, "moves": [[2, 2], [3, 3], [4, 4, "s"]]}, {"on": 2, "moves": [[3, 2], [6, 3, "p"], [7, 4, "w"]]}, {"on": 3, "moves": [[6, 2, "p"], [7, 3, "w"]], "through": 9}], "at_bats": [[0, 0], [1, 1], [2, 2], [3, 3], [4, 5], [6, 8], [9, 9]]}];
+const ZONES = [{"runners": [{"on": 0, "moves": [[1, 2, "s"], [3, 3, "p"], [4, 4]]}, {"on": 2, "moves": [[3, 2, "p"], [4, 3], [5, 4, "w"]]}, {"on": 4, "moves": [[5, 2, "w"], [7, 3, "s"]], "through": 9}, {"on": 10, "moves": [[11, 2, "s", "out"]]}], "at_bats": [[0, 0], [1, 2], [3, 4], [5, 6], [7, 8], [9, 9], [10, 10], [11, 11]], "summary": [9, "O:3 H:2/2 R:2/2"]}, {"runners": [{"on": 0, "moves": [[1, 2], [2, 3], [3, 4]]}, {"on": 1, "moves": [[2, 2], [3, 3], [4, 4, "s"]]}, {"on": 2, "moves": [[3, 2], [6, 3, "p"], [7, 4, "w"]]}, {"on": 3, "moves": [[6, 2, "p"], [7, 3, "w"]], "through": 9}], "at_bats": [[0, 0], [1, 1], [2, 2], [3, 3], [4, 5], [6, 8], [9, 9]], "summary": [9, "O:3 H:0/0 R:3/3"]}];
 
 const COLS = ["col-plate", "col-b1", "col-b2", "col-b3", "col-home"];
 const TOP = 0.28, LOW = 0.72;   // leave a base near the top of a row, arrive near the bottom
@@ -308,8 +309,8 @@ ZONES.forEach((z, zi) => {
                      stroke: INK, 'stroke-width': 1.8, 'stroke-linecap': 'round' });
   });
   z.runners.forEach(rn => {
-    let row = rn.on, col = 1, cur = pt(row, 1, LOW);
-    line(pt(row, 0, LOW), cur, true);               // batter reaches 1B
+    let row = rn.on, col = rn.to || 1, cur = pt(row, col, LOW);
+    line(pt(row, 0, LOW), cur, true);               // batter reaches base (1B unless 'to')
     const holdTo = r => {                           // stay on base down to row r
       for (let rr = row + 1; rr <= r; rr++) {
         const nxt = pt(rr, col, TOP);
@@ -321,14 +322,28 @@ ZONES.forEach((z, zi) => {
     };
     rn.moves.forEach(([r, c, lbl, out]) => {
       holdTo(r);
-      const to = pt(r, c, LOW);
+      let to = pt(r, c, LOW);
+      if (out === 'join') {                         // merge into the batter's line inside column c
+        const d = trs[r].querySelector('td.' + COLS[c]).getBoundingClientRect();
+        to = [d.left + d.width * 0.9 + sx, to[1]];
+      }
       line(cur, to, !out);
       if (lbl) el('text', { x: (cur[0] + to[0]) / 2 + 4, y: (cur[1] + to[1]) / 2 - 3, class: 'cause' })
                  .textContent = lbl;
       cur = to; col = c;
     });
-    if (rn.through) holdTo(rn.through);
+    if (rn.through) {                               // stranded: hold down to the double line
+      holdTo(rn.through);
+      const end = pt(rn.through, col, 1.0);
+      line(cur, end, false);
+    }
   });
+  if (z.summary) {                                  // inning summary written on the double line
+    const [r, txt] = z.summary;
+    const d = trs[r].getBoundingClientRect();
+    el('text', { x: d.right - 6 + sx, y: d.bottom + 14 + sy, 'text-anchor': 'end', class: 'cause summary' })
+      .textContent = txt;
+  }
 });
 </script>
 </body>
